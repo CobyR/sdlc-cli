@@ -136,8 +136,9 @@ export default class WorkList extends Command {
     
     // Calculate column widths
     const maxIdLength = Math.max(3, ...issues.map(i => i.id.length))
-    const maxTitleLength = Math.min(50, Math.max(10, ...issues.map(i => i.title.length)))
+    const maxTitleLength = Math.min(40, Math.max(10, ...issues.map(i => i.title.length)))
     const maxAssigneeLength = Math.max(10, ...issues.map(i => (i.assignee || 'unassigned').length))
+    const maxUrlLength = Math.max(30, ...issues.map(i => (i.url || '').length))
     
     // Table header
     const header = [
@@ -145,7 +146,8 @@ export default class WorkList extends Command {
       `#${' '.repeat(maxIdLength - 1)}`,
       'Title'.padEnd(maxTitleLength),
       'Assignee'.padEnd(maxAssigneeLength),
-      'Labels'
+      'Labels'.padEnd(20),
+      'URL'.padEnd(maxUrlLength)
     ].join(' | ')
     
     this.log(header)
@@ -157,33 +159,24 @@ export default class WorkList extends Command {
       const id = `#${issue.id}`.padEnd(maxIdLength + 1)
       const title = issue.title.substring(0, maxTitleLength).padEnd(maxTitleLength)
       const assignee = (issue.assignee || 'unassigned').padEnd(maxAssigneeLength)
-      const labels = issue.labels && issue.labels.length > 0 
-        ? issue.labels.join(', ') 
-        : '(none)'
+      const labels = (issue.labels && issue.labels.length > 0 
+        ? issue.labels.join(', ').substring(0, 20)
+        : '(none)').padEnd(20)
+      const url = (issue.url || '(no url)').padEnd(maxUrlLength)
       
       const row = [
         statusIcon.padEnd(6),
         id,
         title,
         assignee,
-        labels
+        labels,
+        url
       ].join(' | ')
       
       this.log(row)
     })
     
     this.log('-'.repeat(header.length))
-    this.log('')
-    
-    // Show URLs below table
-    if (issues.some(i => i.url)) {
-      this.log('URLs:')
-      issues.forEach(issue => {
-        if (issue.url) {
-          this.log(`  #${issue.id}: ${issue.url}`)
-        }
-      })
-    }
   }
 }
 

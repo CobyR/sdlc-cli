@@ -63,21 +63,27 @@ export default class MergeAndRelease extends Command {
 
     // Verify version on main matches what was in the PR
     this.log('🔍 Verifying version on main...')
+    let config: any
     try {
       const {getVersionManager} = await import('../../lib/version')
       const {getConfig} = await import('../../lib/config')
-      const config = await getConfig()
+      config = await getConfig()
       const language = (config.language || 'nodejs') as 'python' | 'nodejs' | 'typescript'
       const versionManager = getVersionManager(language)
       const mainVersion = await versionManager.getCurrentVersion()
       this.log(`✅ Version on main: ${mainVersion}`)
     } catch (error: any) {
       this.warn(`⚠️  Failed to verify version on main: ${error.message}`)
+      // Still try to get config for build step
+      const {getConfig} = await import('../../lib/config')
+      config = await getConfig()
     }
 
     // Build the project if it's a Node.js/TypeScript project
-    const {getConfig} = await import('../../lib/config')
-    const config = await getConfig()
+    if (!config) {
+      const {getConfig} = await import('../../lib/config')
+      config = await getConfig()
+    }
     const language = (config.language || 'nodejs') as 'python' | 'nodejs' | 'typescript'
     
     if (language === 'nodejs' || language === 'typescript') {

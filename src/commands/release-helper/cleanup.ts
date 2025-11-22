@@ -6,6 +6,8 @@ import {getConfig} from '../../lib/config'
 export default class Cleanup extends Command {
   static description = 'Cleanup issues after a release'
 
+  static aliases = ['rh:cleanup']
+
   static examples = [
     '<%= config.bin %> <%= command.id %>',
     '<%= config.bin %> <%= command.id %> --force',

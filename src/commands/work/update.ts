@@ -5,6 +5,8 @@ import {getConfig} from '../../lib/config'
 export default class WorkUpdate extends Command {
   static description = 'Update a work item/issue'
 
+  static aliases = ['w:update']
+
   static examples = [
     '<%= config.bin %> <%= command.id %> --id 42 --title "New title"',
     '<%= config.bin %> <%= command.id %> --id 42 --state closed',

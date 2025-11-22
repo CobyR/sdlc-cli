@@ -5,6 +5,8 @@ import {getConfig} from '../../lib/config'
 export default class WorkGet extends Command {
   static description = 'Get detailed information about a specific work item/issue'
 
+  static aliases = ['w:get']
+
   static examples = [
     '<%= config.bin %> <%= command.id %> --id 42',
     '<%= config.bin %> <%= command.id %> --id 42 --tracker github',

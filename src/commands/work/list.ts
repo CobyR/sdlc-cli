@@ -5,6 +5,8 @@ import {getConfig} from '../../lib/config'
 export default class WorkList extends Command {
   static description = 'List work items/issues with filtering options'
 
+  static aliases = ['w:list']
+
   static examples = [
     '<%= config.bin %> <%= command.id %>',
     '<%= config.bin %> <%= command.id %> --state open',

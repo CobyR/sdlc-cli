@@ -8,6 +8,8 @@ import {getConfig} from '../../lib/config'
 export default class CreatePr extends Command {
   static description = 'Create PR for current branch'
 
+  static aliases = ['rh:create-pr']
+
   static examples = [
     '<%= config.bin %> <%= command.id %>',
     '<%= config.bin %> <%= command.id %> --title "My Release"',

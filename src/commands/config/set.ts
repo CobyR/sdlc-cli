@@ -5,6 +5,8 @@ import {SDLCConfig} from '../../lib/config/types'
 export default class ConfigSet extends Command {
   static description = 'Set a configuration value'
 
+  static aliases = ['c:set']
+
   static examples = [
     '<%= config.bin %> <%= command.id %> language python',
     '<%= config.bin %> <%= command.id %> tracker github',

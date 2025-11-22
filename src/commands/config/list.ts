@@ -4,6 +4,8 @@ import {loadConfig, getConfig, DEFAULT_CONFIG} from '../../lib/config'
 export default class ConfigList extends Command {
   static description = 'List current configuration values'
 
+  static aliases = ['c:list']
+
   static examples = [
     '<%= config.bin %> <%= command.id %>',
   ]
@@ -13,7 +15,7 @@ export default class ConfigList extends Command {
     const mergedConfig = await getConfig()
 
     this.log('📋 Current Configuration\n')
-    this.log('─'.repeat(80))
+    this.log('-'.repeat(80))
 
     if (!config) {
       this.log('No config file found. Using defaults:\n')
@@ -42,7 +44,7 @@ export default class ConfigList extends Command {
       this.log(`  ${key}: ${displayValue}${source}`)
     })
 
-    this.log('\n─'.repeat(80))
+    this.log('\n' + '-'.repeat(80))
     this.log('\nNote: CLI flags override config values, which override defaults.')
   }
 }

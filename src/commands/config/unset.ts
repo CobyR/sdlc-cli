@@ -4,6 +4,8 @@ import {updateConfigValue, loadConfig} from '../../lib/config'
 export default class ConfigUnset extends Command {
   static description = 'Remove a configuration value (revert to default)'
 
+  static aliases = ['c:unset']
+
   static examples = [
     '<%= config.bin %> <%= command.id %> language',
     '<%= config.bin %> <%= command.id %> tracker',

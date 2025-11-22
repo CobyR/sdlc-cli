@@ -10,6 +10,8 @@ const execAsync = promisify(exec)
 export default class MergeAndRelease extends Command {
   static description = 'Merge PR and execute release process'
 
+  static aliases = ['rh:merge-and-release']
+
   static examples = [
     '<%= config.bin %> <%= command.id %>',
   ]

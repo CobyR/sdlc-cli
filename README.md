@@ -196,6 +196,23 @@ Options:
 - `--limit`: Maximum number of issues to return (default: 30)
 - `--tracker`: Issue tracker to use (default: from config or `github`)
 
+#### `create`
+
+Create a new work item/issue.
+
+```bash
+sdlc work create --title "Fix bug in login"
+sdlc work create --title "Add feature" --body "Description of the feature"
+sdlc work create --title "Bug fix" --assignee username --label "bug"
+```
+
+Options:
+- `--title`: Issue title (required)
+- `--body`: Issue body/description
+- `--assignee`: Assign issue to user
+- `--label`: Add label (can be used multiple times)
+- `--tracker`: Issue tracker to use (default: from config or `github`)
+
 #### `get`
 
 Get detailed information about a specific work item/issue.

@@ -34,8 +34,17 @@
     "bin": "sdlc",
     "commands": "./dist/commands",
     "topics": {
+      "config": {
+        "description": "Configuration management commands",
+        "aliases": ["c"]
+      },
+      "work": {
+        "description": "Work item and issue management commands",
+        "aliases": ["w"]
+      },
       "release-helper": {
-        "description": "Release workflow management commands"
+        "description": "Release workflow management commands",
+        "aliases": ["rh"]
       }
     }
   },

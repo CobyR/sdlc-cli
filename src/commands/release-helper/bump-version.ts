@@ -11,6 +11,8 @@ const execAsync = promisify(exec)
 export default class BumpVersion extends Command {
   static description = 'Version bump to prepare for a release'
 
+  static aliases = ['rh:bump-version']
+
   static examples = [
     '<%= config.bin %> <%= command.id %> --message "Release message"',
     '<%= config.bin %> <%= command.id %> --language python --major',

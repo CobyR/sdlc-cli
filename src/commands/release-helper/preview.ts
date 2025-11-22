@@ -6,6 +6,8 @@ import {getConfig} from '../../lib/config'
 export default class Preview extends Command {
   static description = 'Preview fixed issues for upcoming release'
 
+  static aliases = ['rh:preview']
+
   static examples = [
     '<%= config.bin %> <%= command.id %>',
     '<%= config.bin %> <%= command.id %> --user username',

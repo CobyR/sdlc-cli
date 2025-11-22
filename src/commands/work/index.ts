@@ -6,11 +6,12 @@ export default class Work extends Command {
   static examples = [
     '<%= config.bin %> <%= command.id %> list',
     '<%= config.bin %> <%= command.id %> get --id 42',
+    '<%= config.bin %> <%= command.id %> create --title "New issue"',
     '<%= config.bin %> <%= command.id %> update --id 42 --title "New title"',
   ]
 
   async run(): Promise<void> {
-    this.log('Work - Use a subcommand like list, get, or update')
+    this.log('Work - Use a subcommand like list, get, create, or update')
   }
 }
 

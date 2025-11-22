@@ -4,6 +4,8 @@ import {getConfig, DEFAULT_CONFIG} from '../../lib/config'
 export default class ConfigGet extends Command {
   static description = 'Get a specific configuration value'
 
+  static aliases = ['c:get']
+
   static examples = [
     '<%= config.bin %> <%= command.id %> language',
     '<%= config.bin %> <%= command.id %> tracker',

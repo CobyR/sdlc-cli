@@ -1,6 +1,6 @@
 import {exec} from 'child_process'
 import {promisify} from 'util'
-import {Issue, IssueTracker, IssueFilters, IssueUpdate} from './types'
+import {Issue, IssueTracker, IssueFilters, IssueUpdate, IssueCreate} from './types'
 
 const execAsync = promisify(exec)
 
@@ -168,6 +168,44 @@ export class GitHubIssuesTracker implements IssueTracker {
     // This would require @octokit/rest or similar
     // For now, return empty array if gh CLI fails
     return []
+  }
+
+  async createIssue(issue: IssueCreate): Promise<Issue> {
+    try {
+      let command = `gh issue create --repo ${this.repo} --title "${issue.title.replace(/"/g, '\\"')}"`
+      
+      if (issue.body) {
+        command += ` --body "${issue.body.replace(/"/g, '\\"')}"`
+      }
+      
+      if (issue.assignee) {
+        command += ` --assignee ${issue.assignee}`
+      }
+      
+      if (issue.labels && issue.labels.length > 0) {
+        command += ` --label "${issue.labels.join(',')}"`
+      }
+
+      const {stdout} = await execAsync(command)
+      
+      // Extract issue number from output (e.g., "https://github.com/owner/repo/issues/42")
+      const match = stdout.match(/issues\/(\d+)/)
+      if (!match) {
+        throw new Error('Failed to extract issue number from GitHub CLI output')
+      }
+      
+      const issueId = match[1]
+      
+      // Fetch the created issue to return full details
+      const createdIssue = await this.getIssueById(issueId)
+      if (!createdIssue) {
+        throw new Error(`Failed to retrieve created issue ${issueId}`)
+      }
+      
+      return createdIssue
+    } catch (error: any) {
+      throw new Error(`Failed to create issue: ${error.message}`)
+    }
   }
 
   private getRepoFromGit(): string {

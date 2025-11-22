@@ -8,6 +8,8 @@ const execAsync = promisify(exec)
 export default class StartWork extends Command {
   static description = 'Safely start new development work with proper branch setup'
 
+  static aliases = ['rh:start-work']
+
   static examples = [
     '<%= config.bin %> <%= command.id %>',
     '<%= config.bin %> <%= command.id %> --branch-type feature',

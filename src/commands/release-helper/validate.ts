@@ -9,6 +9,8 @@ const execAsync = promisify(exec)
 export default class Validate extends Command {
   static description = 'Validate current state for release readiness'
 
+  static aliases = ['rh:validate']
+
   static examples = [
     '<%= config.bin %> <%= command.id %>',
   ]

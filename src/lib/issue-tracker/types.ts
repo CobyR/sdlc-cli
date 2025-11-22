@@ -27,6 +27,13 @@ export interface IssueUpdate {
   removeLabels?: string[]
 }
 
+export interface IssueCreate {
+  title: string
+  body?: string
+  assignee?: string
+  labels?: string[]
+}
+
 export interface IssueTracker {
   /**
    * Get fixed/resolved issues for a user
@@ -52,5 +59,10 @@ export interface IssueTracker {
    * Update an issue with new properties
    */
   updateIssue(id: string, updates: IssueUpdate): Promise<Issue>
+
+  /**
+   * Create a new issue
+   */
+  createIssue(issue: IssueCreate): Promise<Issue>
 }
 

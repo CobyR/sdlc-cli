@@ -1,3 +1,14 @@
+## [1.0.2] - November 22, 2025
+
+Minor fixes
+
+### Changes
+
+* [21](https://github.com/CobyR/sdlc-cli/issues/21) - Remove oclif.manifest.json from repository
+* [20](https://github.com/CobyR/sdlc-cli/issues/20) - Add build step to merge-and-release for Node.js/TypeScript projects
+* [19](https://github.com/CobyR/sdlc-cli/issues/19) - Fix validate and merge-and-release to check PR commits for version bump
+* [17](https://github.com/CobyR/sdlc-cli/issues/17) - Fix cleanup command to actually close issues
+
 # Changelog
 
 All notable changes to this project will be documented in this file.

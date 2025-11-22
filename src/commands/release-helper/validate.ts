@@ -39,11 +39,12 @@ export default class Validate extends Command {
     this.log('✅ PR exists for current branch')
 
     // Check if version files have been recently updated
-    // Check multiple recent commits (up to 10) to find version bump
+    // Check commits on this branch that aren't on main (PR commits)
     this.log('🔍 Checking for version bump...')
     try {
-      const {stdout} = await execAsync('git log --oneline -10 --name-only')
-      const recentFiles = stdout.toLowerCase()
+      // Get commits on this branch that aren't on main
+      const {stdout: branchCommits} = await execAsync('git log main..HEAD --oneline --name-only')
+      const recentFiles = branchCommits.toLowerCase()
       const versionFiles = ['version_notes.md', 'setup.py', 'pyproject.toml', 'metadata', 'package.json', 'changelog.md']
       const versionFilesUpdated = versionFiles.some(
         file => recentFiles.includes(file.toLowerCase())
@@ -53,7 +54,7 @@ export default class Validate extends Command {
         this.error('❌ RELEASE BLOCKED: Version not bumped!\n   Expected workflow:\n   1. Run: sdlc release-helper bump-version --message "Your release message"\n   2. Commit the version changes\n   3. Create PR with version bump included\n   4. Then run merge-and-release')
       }
 
-      this.log('✅ Version bump detected in recent commits')
+      this.log('✅ Version bump detected in PR commits')
     } catch (error: any) {
       this.error(`❌ Failed to check recent commits: ${error.message}`)
     }

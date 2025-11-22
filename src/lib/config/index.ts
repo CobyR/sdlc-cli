@@ -76,6 +76,10 @@ export function validateConfig(config: SDLCConfig): void {
   if (config.repo !== undefined && typeof config.repo !== 'string') {
     throw new Error('Config field "repo" must be a string')
   }
+
+  if (config.view !== undefined && config.view !== 'list' && config.view !== 'table') {
+    throw new Error('Config field "view" must be "list" or "table"')
+  }
 }
 
 /**
@@ -90,6 +94,7 @@ export async function getConfig(rootDir: string = process.cwd()): Promise<SDLCCo
     language: getConfigValue(config, 'language', DEFAULT_CONFIG.language!),
     tracker: getConfigValue(config, 'tracker', DEFAULT_CONFIG.tracker!),
     repo: getConfigValue(config, 'repo', undefined),
+    view: getConfigValue(config, 'view', 'list'),
   }
 }
 

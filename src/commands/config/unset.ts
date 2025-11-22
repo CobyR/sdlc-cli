@@ -16,7 +16,7 @@ export default class ConfigUnset extends Command {
     key: Args.string({
       description: 'Configuration key to remove',
       required: true,
-      options: ['language', 'tracker', 'repo'],
+      options: ['language', 'tracker', 'repo', 'view'],
     }),
   }
 

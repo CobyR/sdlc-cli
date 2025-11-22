@@ -17,7 +17,7 @@ export default class ConfigSet extends Command {
     key: Args.string({
       description: 'Configuration key to set',
       required: true,
-      options: ['language', 'tracker', 'repo'],
+      options: ['language', 'tracker', 'repo', 'view'],
     }),
     value: Args.string({
       description: 'Value to set',
@@ -36,6 +36,11 @@ export default class ConfigSet extends Command {
       validateConfig(testConfig)
     } catch (error: any) {
       this.error(`❌ Invalid value: ${error.message}`)
+    }
+
+    // Additional validation for view field
+    if (key === 'view' && value !== 'list' && value !== 'table') {
+      this.error('❌ Invalid value: view must be "list" or "table"')
     }
 
     this.log(`📝 Setting ${key} to "${value}"...`)

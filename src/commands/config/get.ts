@@ -16,7 +16,7 @@ export default class ConfigGet extends Command {
     key: Args.string({
       description: 'Configuration key to get',
       required: true,
-      options: ['language', 'tracker', 'repo'],
+      options: ['language', 'tracker', 'repo', 'view'],
     }),
   }
 

@@ -42,6 +42,11 @@ export default class WorkList extends Command {
       description: 'Issue tracker to use',
       options: ['github'],
     }),
+    format: Flags.string({
+      char: 'f',
+      description: 'Output format',
+      options: ['list', 'table'],
+    }),
   }
 
   async run(): Promise<void> {
@@ -50,6 +55,7 @@ export default class WorkList extends Command {
     // Load config and merge with flags (flags override config)
     const config = await getConfig()
     const tracker = (flags.tracker || config.tracker || 'github') as SupportedTracker
+    const viewFormat = (flags.format || config.view || 'list') as 'list' | 'table'
 
     const issueTracker = getIssueTracker(tracker, config.repo)
 
@@ -71,47 +77,112 @@ export default class WorkList extends Command {
         return
       }
 
-      this.log(`Found ${issues.length} issue(s):\n`)
-      this.log('-'.repeat(80))
-
-      issues.forEach(issue => {
-        // Determine status icon based on issue state and labels
-        // Green for closed/completed, Yellow for in-progress, Red for open/new
-        let statusIcon: string
-        const statusLower = issue.status.toLowerCase()
-        if (statusLower === 'closed') {
-          statusIcon = '🟢' // Green for completed/closed
-        } else {
-          // Check if issue has in-progress label
-          const hasInProgressLabel = issue.labels?.some(label => 
-            label.toLowerCase().includes('in progress') || 
-            label.toLowerCase().includes('in-progress') ||
-            label.toLowerCase() === 'in-progress' ||
-            label.toLowerCase() === 'in progress'
-          )
-          
-          if (hasInProgressLabel) {
-            statusIcon = '🟡' // Yellow for in-progress
-          } else {
-            statusIcon = '🔴' // Red for new/open
-          }
-        }
-        
-        const assigneeText = issue.assignee ? ` @${issue.assignee}` : ' (unassigned)'
-        const labelsText = issue.labels && issue.labels.length > 0 
-          ? ` [${issue.labels.join(', ')}]` 
-          : ''
-
-        this.log(`${statusIcon} [#${issue.id}] ${issue.title}${assigneeText}${labelsText}`)
-        if (issue.url) {
-          this.log(`   ${issue.url}`)
-        }
-        this.log('')
-      })
-
-      this.log('-'.repeat(80))
+      if (viewFormat === 'table') {
+        this.renderTableView(issues)
+      } else {
+        this.renderListView(issues)
+      }
     } catch (error: any) {
       this.error(`❌ Failed to list issues: ${error.message}`)
+    }
+  }
+
+  private getStatusIcon(issue: any): string {
+    // Determine status icon based on issue state and labels
+    // Green for closed/completed, Yellow for in-progress, Red for open/new
+    const statusLower = issue.status.toLowerCase()
+    if (statusLower === 'closed') {
+      return '🟢' // Green for completed/closed
+    } else {
+      // Check if issue has in-progress label
+      const hasInProgressLabel = issue.labels?.some((label: string) => 
+        label.toLowerCase().includes('in progress') || 
+        label.toLowerCase().includes('in-progress') ||
+        label.toLowerCase() === 'in-progress' ||
+        label.toLowerCase() === 'in progress'
+      )
+      
+      if (hasInProgressLabel) {
+        return '🟡' // Yellow for in-progress
+      } else {
+        return '🔴' // Red for new/open
+      }
+    }
+  }
+
+  private renderListView(issues: any[]): void {
+    this.log(`Found ${issues.length} issue(s):\n`)
+    this.log('-'.repeat(80))
+
+    issues.forEach(issue => {
+      const statusIcon = this.getStatusIcon(issue)
+      const assigneeText = issue.assignee ? ` @${issue.assignee}` : ' (unassigned)'
+      const labelsText = issue.labels && issue.labels.length > 0 
+        ? ` [${issue.labels.join(', ')}]` 
+        : ''
+
+      this.log(`${statusIcon} [#${issue.id}] ${issue.title}${assigneeText}${labelsText}`)
+      if (issue.url) {
+        this.log(`   ${issue.url}`)
+      }
+      this.log('')
+    })
+
+    this.log('-'.repeat(80))
+  }
+
+  private renderTableView(issues: any[]): void {
+    this.log(`Found ${issues.length} issue(s):\n`)
+    
+    // Calculate column widths
+    const maxIdLength = Math.max(3, ...issues.map(i => i.id.length))
+    const maxTitleLength = Math.min(50, Math.max(10, ...issues.map(i => i.title.length)))
+    const maxAssigneeLength = Math.max(10, ...issues.map(i => (i.assignee || 'unassigned').length))
+    
+    // Table header
+    const header = [
+      'Status'.padEnd(6),
+      `#${' '.repeat(maxIdLength - 1)}`,
+      'Title'.padEnd(maxTitleLength),
+      'Assignee'.padEnd(maxAssigneeLength),
+      'Labels'
+    ].join(' | ')
+    
+    this.log(header)
+    this.log('-'.repeat(header.length))
+    
+    // Table rows
+    issues.forEach(issue => {
+      const statusIcon = this.getStatusIcon(issue)
+      const id = `#${issue.id}`.padEnd(maxIdLength + 1)
+      const title = issue.title.substring(0, maxTitleLength).padEnd(maxTitleLength)
+      const assignee = (issue.assignee || 'unassigned').padEnd(maxAssigneeLength)
+      const labels = issue.labels && issue.labels.length > 0 
+        ? issue.labels.join(', ') 
+        : '(none)'
+      
+      const row = [
+        statusIcon.padEnd(6),
+        id,
+        title,
+        assignee,
+        labels
+      ].join(' | ')
+      
+      this.log(row)
+    })
+    
+    this.log('-'.repeat(header.length))
+    this.log('')
+    
+    // Show URLs below table
+    if (issues.some(i => i.url)) {
+      this.log('URLs:')
+      issues.forEach(issue => {
+        if (issue.url) {
+          this.log(`  #${issue.id}: ${issue.url}`)
+        }
+      })
     }
   }
 }

@@ -24,7 +24,7 @@ export default class ConfigList extends Command {
     }
 
     // Show all config values with source indication
-    const keys: Array<keyof typeof mergedConfig> = ['language', 'tracker', 'repo']
+    const keys: Array<keyof typeof mergedConfig> = ['language', 'tracker', 'repo', 'view']
     
     keys.forEach(key => {
       const value = mergedConfig[key]

@@ -39,7 +39,8 @@ Create a `.sdlc.json` file in your project root:
 {
   "language": "nodejs",
   "tracker": "github",
-  "repo": "owner/repo-name"
+  "repo": "owner/repo-name",
+  "view": "list"
 }
 ```
 
@@ -47,6 +48,7 @@ Create a `.sdlc.json` file in your project root:
 - `language`: Default programming language for version management (default: `"nodejs"`). Supported values: `nodejs`, `typescript`, `python`
 - `tracker`: Default issue tracker to use (default: `"github"`)
 - `repo`: Optional GitHub repository identifier in `owner/repo-name` format (auto-detected from git if not provided)
+- `view`: Default output format for work list command (default: `"list"`). Supported values: `list`, `table`
 
 ### Config Precedence
 
@@ -195,6 +197,18 @@ Options:
 - `--label`: Filter by label (can be used multiple times)
 - `--limit`: Maximum number of issues to return (default: 30)
 - `--tracker`: Issue tracker to use (default: from config or `github`)
+- `--format`: Output format (list, table) (default: from config or `list`)
+
+The `--format` option allows you to choose between:
+- `list`: Traditional list view with full details (default)
+- `table`: Compact table view with columns for Status, #, Title, Assignee, and Labels
+
+You can set a default view format in `.sdlc.json` using the `view` field:
+```json
+{
+  "view": "table"
+}
+```
 
 #### `create`
 

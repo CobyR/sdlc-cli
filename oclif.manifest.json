@@ -1,0 +1,1217 @@
+{
+  "commands": {
+    "config:get": {
+      "aliases": [
+        "c:get"
+      ],
+      "args": {
+        "key": {
+          "description": "Configuration key to get",
+          "name": "key",
+          "options": [
+            "language",
+            "tracker",
+            "repo"
+          ],
+          "required": true
+        }
+      },
+      "description": "Get a specific configuration value",
+      "examples": [
+        "<%= config.bin %> <%= command.id %> language",
+        "<%= config.bin %> <%= command.id %> tracker",
+        "<%= config.bin %> <%= command.id %> repo"
+      ],
+      "flags": {
+        "show-source": {
+          "description": "Show where the value comes from (config file, default, etc.)",
+          "name": "show-source",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "config:get",
+      "pluginAlias": "sdlc-cli",
+      "pluginName": "sdlc-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": false,
+      "relativePath": [
+        "dist",
+        "commands",
+        "config",
+        "get.js"
+      ]
+    },
+    "config": {
+      "aliases": [],
+      "args": {},
+      "description": "Configuration management commands",
+      "examples": [
+        "<%= config.bin %> <%= command.id %> list",
+        "<%= config.bin %> <%= command.id %> get language",
+        "<%= config.bin %> <%= command.id %> set language python",
+        "<%= config.bin %> <%= command.id %> unset repo"
+      ],
+      "flags": {},
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "config",
+      "pluginAlias": "sdlc-cli",
+      "pluginName": "sdlc-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": false,
+      "relativePath": [
+        "dist",
+        "commands",
+        "config",
+        "index.js"
+      ]
+    },
+    "config:list": {
+      "aliases": [
+        "c:list"
+      ],
+      "args": {},
+      "description": "List current configuration values",
+      "examples": [
+        "<%= config.bin %> <%= command.id %>"
+      ],
+      "flags": {},
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "config:list",
+      "pluginAlias": "sdlc-cli",
+      "pluginName": "sdlc-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": false,
+      "relativePath": [
+        "dist",
+        "commands",
+        "config",
+        "list.js"
+      ]
+    },
+    "config:set": {
+      "aliases": [
+        "c:set"
+      ],
+      "args": {
+        "key": {
+          "description": "Configuration key to set",
+          "name": "key",
+          "options": [
+            "language",
+            "tracker",
+            "repo"
+          ],
+          "required": true
+        },
+        "value": {
+          "description": "Value to set",
+          "name": "value",
+          "required": true
+        }
+      },
+      "description": "Set a configuration value",
+      "examples": [
+        "<%= config.bin %> <%= command.id %> language python",
+        "<%= config.bin %> <%= command.id %> tracker github",
+        "<%= config.bin %> <%= command.id %> repo owner/repo-name"
+      ],
+      "flags": {},
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "config:set",
+      "pluginAlias": "sdlc-cli",
+      "pluginName": "sdlc-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": false,
+      "relativePath": [
+        "dist",
+        "commands",
+        "config",
+        "set.js"
+      ]
+    },
+    "config:unset": {
+      "aliases": [
+        "c:unset"
+      ],
+      "args": {
+        "key": {
+          "description": "Configuration key to remove",
+          "name": "key",
+          "options": [
+            "language",
+            "tracker",
+            "repo"
+          ],
+          "required": true
+        }
+      },
+      "description": "Remove a configuration value (revert to default)",
+      "examples": [
+        "<%= config.bin %> <%= command.id %> language",
+        "<%= config.bin %> <%= command.id %> tracker",
+        "<%= config.bin %> <%= command.id %> repo"
+      ],
+      "flags": {},
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "config:unset",
+      "pluginAlias": "sdlc-cli",
+      "pluginName": "sdlc-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": false,
+      "relativePath": [
+        "dist",
+        "commands",
+        "config",
+        "unset.js"
+      ]
+    },
+    "work:create": {
+      "aliases": [
+        "w:create"
+      ],
+      "args": {},
+      "description": "Create a new work item/issue",
+      "examples": [
+        "<%= config.bin %> <%= command.id %> --title \"Fix bug in login\"",
+        "<%= config.bin %> <%= command.id %> --title \"Add feature\" --body \"Description of the feature\"",
+        "<%= config.bin %> <%= command.id %> --title \"Bug fix\" --assignee username --label \"bug\""
+      ],
+      "flags": {
+        "title": {
+          "char": "t",
+          "description": "Issue title",
+          "name": "title",
+          "required": true,
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "body": {
+          "char": "b",
+          "description": "Issue body/description",
+          "name": "body",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "assignee": {
+          "char": "a",
+          "description": "Assign issue to user",
+          "name": "assignee",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "label": {
+          "char": "l",
+          "description": "Add label (can be used multiple times)",
+          "name": "label",
+          "hasDynamicHelp": false,
+          "multiple": true,
+          "type": "option"
+        },
+        "tracker": {
+          "description": "Issue tracker to use",
+          "name": "tracker",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "options": [
+            "github"
+          ],
+          "type": "option"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "work:create",
+      "pluginAlias": "sdlc-cli",
+      "pluginName": "sdlc-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": false,
+      "relativePath": [
+        "dist",
+        "commands",
+        "work",
+        "create.js"
+      ]
+    },
+    "work:get": {
+      "aliases": [
+        "w:get"
+      ],
+      "args": {},
+      "description": "Get detailed information about a specific work item/issue",
+      "examples": [
+        "<%= config.bin %> <%= command.id %> --id 42",
+        "<%= config.bin %> <%= command.id %> --id 42 --tracker github"
+      ],
+      "flags": {
+        "id": {
+          "char": "i",
+          "description": "Issue ID/number",
+          "name": "id",
+          "required": true,
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "tracker": {
+          "char": "t",
+          "description": "Issue tracker to use",
+          "name": "tracker",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "options": [
+            "github"
+          ],
+          "type": "option"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "work:get",
+      "pluginAlias": "sdlc-cli",
+      "pluginName": "sdlc-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": false,
+      "relativePath": [
+        "dist",
+        "commands",
+        "work",
+        "get.js"
+      ]
+    },
+    "work": {
+      "aliases": [],
+      "args": {},
+      "description": "Work item and issue management commands",
+      "examples": [
+        "<%= config.bin %> <%= command.id %> list",
+        "<%= config.bin %> <%= command.id %> get --id 42",
+        "<%= config.bin %> <%= command.id %> create --title \"New issue\"",
+        "<%= config.bin %> <%= command.id %> update --id 42 --title \"New title\"",
+        "<%= config.bin %> <%= command.id %> label list",
+        "<%= config.bin %> <%= command.id %> label create --name \"bug\""
+      ],
+      "flags": {},
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "work",
+      "pluginAlias": "sdlc-cli",
+      "pluginName": "sdlc-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": false,
+      "relativePath": [
+        "dist",
+        "commands",
+        "work",
+        "index.js"
+      ]
+    },
+    "work:list": {
+      "aliases": [
+        "w:list"
+      ],
+      "args": {},
+      "description": "List work items/issues with filtering options",
+      "examples": [
+        "<%= config.bin %> <%= command.id %>",
+        "<%= config.bin %> <%= command.id %> --state open",
+        "<%= config.bin %> <%= command.id %> --assignee username --state open",
+        "<%= config.bin %> <%= command.id %> --label \"bug\" --label \"priority:high\""
+      ],
+      "flags": {
+        "state": {
+          "char": "s",
+          "description": "Filter by issue state",
+          "name": "state",
+          "default": "open",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "options": [
+            "open",
+            "closed",
+            "all"
+          ],
+          "type": "option"
+        },
+        "assignee": {
+          "char": "a",
+          "description": "Filter by assignee",
+          "name": "assignee",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "author": {
+          "description": "Filter by author",
+          "name": "author",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "label": {
+          "char": "l",
+          "description": "Filter by label (can be used multiple times)",
+          "name": "label",
+          "hasDynamicHelp": false,
+          "multiple": true,
+          "type": "option"
+        },
+        "limit": {
+          "description": "Maximum number of issues to return",
+          "name": "limit",
+          "default": 30,
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "tracker": {
+          "char": "t",
+          "description": "Issue tracker to use",
+          "name": "tracker",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "options": [
+            "github"
+          ],
+          "type": "option"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "work:list",
+      "pluginAlias": "sdlc-cli",
+      "pluginName": "sdlc-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": false,
+      "relativePath": [
+        "dist",
+        "commands",
+        "work",
+        "list.js"
+      ]
+    },
+    "work:update": {
+      "aliases": [
+        "w:update"
+      ],
+      "args": {},
+      "description": "Update a work item/issue",
+      "examples": [
+        "<%= config.bin %> <%= command.id %> --id 42 --title \"New title\"",
+        "<%= config.bin %> <%= command.id %> --id 42 --state closed",
+        "<%= config.bin %> <%= command.id %> --id 42 --assignee username",
+        "<%= config.bin %> <%= command.id %> --id 42 --label \"bug\" --label \"priority:high\"",
+        "<%= config.bin %> <%= command.id %> --id 42 --remove-label \"bug\""
+      ],
+      "flags": {
+        "id": {
+          "char": "i",
+          "description": "Issue ID/number",
+          "name": "id",
+          "required": true,
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "title": {
+          "char": "t",
+          "description": "Update issue title",
+          "name": "title",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "body": {
+          "char": "b",
+          "description": "Update issue body/description",
+          "name": "body",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "state": {
+          "char": "s",
+          "description": "Update issue state",
+          "name": "state",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "options": [
+            "open",
+            "closed"
+          ],
+          "type": "option"
+        },
+        "assignee": {
+          "char": "a",
+          "description": "Update assignee",
+          "name": "assignee",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "label": {
+          "char": "l",
+          "description": "Add label (can be used multiple times)",
+          "name": "label",
+          "hasDynamicHelp": false,
+          "multiple": true,
+          "type": "option"
+        },
+        "remove-label": {
+          "description": "Remove label (can be used multiple times)",
+          "name": "remove-label",
+          "hasDynamicHelp": false,
+          "multiple": true,
+          "type": "option"
+        },
+        "tracker": {
+          "description": "Issue tracker to use",
+          "name": "tracker",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "options": [
+            "github"
+          ],
+          "type": "option"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "work:update",
+      "pluginAlias": "sdlc-cli",
+      "pluginName": "sdlc-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": false,
+      "relativePath": [
+        "dist",
+        "commands",
+        "work",
+        "update.js"
+      ]
+    },
+    "release-helper:bump-version": {
+      "aliases": [
+        "rh:bump-version"
+      ],
+      "args": {},
+      "description": "Version bump to prepare for a release",
+      "examples": [
+        "<%= config.bin %> <%= command.id %> --message \"Release message\"",
+        "<%= config.bin %> <%= command.id %> --language python --major"
+      ],
+      "flags": {
+        "language": {
+          "char": "l",
+          "description": "Programming language for version management",
+          "name": "language",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "options": [
+            "python",
+            "nodejs",
+            "typescript"
+          ],
+          "type": "option"
+        },
+        "major": {
+          "char": "M",
+          "description": "Major version number",
+          "name": "major",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "minor": {
+          "char": "m",
+          "description": "Minor version number",
+          "name": "minor",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "patch": {
+          "char": "p",
+          "description": "Patch version number",
+          "name": "patch",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "version": {
+          "char": "v",
+          "description": "Specific version to set",
+          "name": "version",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "message": {
+          "description": "Release message",
+          "name": "message",
+          "required": true,
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "no-commit": {
+          "description": "Skip automatic commit of version changes",
+          "name": "no-commit",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "tracker": {
+          "char": "t",
+          "description": "Issue tracker to use",
+          "name": "tracker",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "options": [
+            "github"
+          ],
+          "type": "option"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "release-helper:bump-version",
+      "pluginAlias": "sdlc-cli",
+      "pluginName": "sdlc-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": false,
+      "relativePath": [
+        "dist",
+        "commands",
+        "release-helper",
+        "bump-version.js"
+      ]
+    },
+    "release-helper:cleanup": {
+      "aliases": [
+        "rh:cleanup"
+      ],
+      "args": {},
+      "description": "Cleanup issues after a release",
+      "examples": [
+        "<%= config.bin %> <%= command.id %>",
+        "<%= config.bin %> <%= command.id %> --force"
+      ],
+      "flags": {
+        "force": {
+          "char": "f",
+          "description": "Force the cleanup to run without confirmation",
+          "name": "force",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "tracker": {
+          "char": "t",
+          "description": "Issue tracker to use",
+          "name": "tracker",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "options": [
+            "github"
+          ],
+          "type": "option"
+        },
+        "language": {
+          "char": "l",
+          "description": "Programming language for version management",
+          "name": "language",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "options": [
+            "python",
+            "nodejs",
+            "typescript"
+          ],
+          "type": "option"
+        },
+        "user": {
+          "char": "u",
+          "description": "User to cleanup issues for (default: current user)",
+          "name": "user",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "release-helper:cleanup",
+      "pluginAlias": "sdlc-cli",
+      "pluginName": "sdlc-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": false,
+      "relativePath": [
+        "dist",
+        "commands",
+        "release-helper",
+        "cleanup.js"
+      ]
+    },
+    "release-helper:create-pr": {
+      "aliases": [
+        "rh:create-pr"
+      ],
+      "args": {},
+      "description": "Create PR for current branch",
+      "examples": [
+        "<%= config.bin %> <%= command.id %>",
+        "<%= config.bin %> <%= command.id %> --title \"My Release\""
+      ],
+      "flags": {
+        "title": {
+          "char": "t",
+          "description": "PR title (if not provided, will be generated)",
+          "name": "title",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "tracker": {
+          "description": "Issue tracker to use",
+          "name": "tracker",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "options": [
+            "github"
+          ],
+          "type": "option"
+        },
+        "base": {
+          "char": "b",
+          "description": "Base branch for PR",
+          "name": "base",
+          "default": "main",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "release-helper:create-pr",
+      "pluginAlias": "sdlc-cli",
+      "pluginName": "sdlc-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": false,
+      "relativePath": [
+        "dist",
+        "commands",
+        "release-helper",
+        "create-pr.js"
+      ]
+    },
+    "release-helper": {
+      "aliases": [],
+      "args": {},
+      "description": "Release workflow management commands",
+      "examples": [
+        "<%= config.bin %> <%= command.id %> validate",
+        "<%= config.bin %> <%= command.id %> bump-version"
+      ],
+      "flags": {},
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "release-helper",
+      "pluginAlias": "sdlc-cli",
+      "pluginName": "sdlc-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": false,
+      "relativePath": [
+        "dist",
+        "commands",
+        "release-helper",
+        "index.js"
+      ]
+    },
+    "release-helper:merge-and-release": {
+      "aliases": [
+        "rh:merge-and-release"
+      ],
+      "args": {},
+      "description": "Merge PR and execute release process",
+      "examples": [
+        "<%= config.bin %> <%= command.id %>"
+      ],
+      "flags": {},
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "release-helper:merge-and-release",
+      "pluginAlias": "sdlc-cli",
+      "pluginName": "sdlc-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": false,
+      "relativePath": [
+        "dist",
+        "commands",
+        "release-helper",
+        "merge-and-release.js"
+      ]
+    },
+    "release-helper:preview": {
+      "aliases": [
+        "rh:preview"
+      ],
+      "args": {},
+      "description": "Preview fixed issues for upcoming release",
+      "examples": [
+        "<%= config.bin %> <%= command.id %>",
+        "<%= config.bin %> <%= command.id %> --user username"
+      ],
+      "flags": {
+        "tracker": {
+          "char": "t",
+          "description": "Issue tracker to use",
+          "name": "tracker",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "options": [
+            "github"
+          ],
+          "type": "option"
+        },
+        "language": {
+          "char": "l",
+          "description": "Programming language for version management",
+          "name": "language",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "options": [
+            "python",
+            "nodejs",
+            "typescript"
+          ],
+          "type": "option"
+        },
+        "user": {
+          "char": "u",
+          "description": "User to preview issues for (default: current user)",
+          "name": "user",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "release-helper:preview",
+      "pluginAlias": "sdlc-cli",
+      "pluginName": "sdlc-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": false,
+      "relativePath": [
+        "dist",
+        "commands",
+        "release-helper",
+        "preview.js"
+      ]
+    },
+    "release-helper:start-work": {
+      "aliases": [
+        "rh:start-work"
+      ],
+      "args": {},
+      "description": "Safely start new development work with proper branch setup",
+      "examples": [
+        "<%= config.bin %> <%= command.id %>",
+        "<%= config.bin %> <%= command.id %> --branch-type feature"
+      ],
+      "flags": {
+        "branch-type": {
+          "char": "t",
+          "description": "Type of branch to create",
+          "name": "branch-type",
+          "default": "feature",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "options": [
+            "feature",
+            "bugfix",
+            "hotfix",
+            "maintenance"
+          ],
+          "type": "option"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "release-helper:start-work",
+      "pluginAlias": "sdlc-cli",
+      "pluginName": "sdlc-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": false,
+      "relativePath": [
+        "dist",
+        "commands",
+        "release-helper",
+        "start-work.js"
+      ]
+    },
+    "release-helper:validate": {
+      "aliases": [
+        "rh:validate"
+      ],
+      "args": {},
+      "description": "Validate current state for release readiness",
+      "examples": [
+        "<%= config.bin %> <%= command.id %>"
+      ],
+      "flags": {},
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "release-helper:validate",
+      "pluginAlias": "sdlc-cli",
+      "pluginName": "sdlc-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": false,
+      "relativePath": [
+        "dist",
+        "commands",
+        "release-helper",
+        "validate.js"
+      ]
+    },
+    "work:label:create": {
+      "aliases": [
+        "w:label:create"
+      ],
+      "args": {},
+      "description": "Create a new label",
+      "examples": [
+        "<%= config.bin %> <%= command.id %> --name \"feature\" --color \"a2eeef\"",
+        "<%= config.bin %> <%= command.id %> --name \"bug\" --color \"d73a4a\" --description \"Something isn't working\""
+      ],
+      "flags": {
+        "name": {
+          "char": "n",
+          "description": "Label name",
+          "name": "name",
+          "required": true,
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "color": {
+          "char": "c",
+          "description": "Label color (hex code without #)",
+          "name": "color",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "description": {
+          "char": "d",
+          "description": "Label description",
+          "name": "description",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "tracker": {
+          "char": "t",
+          "description": "Issue tracker to use",
+          "name": "tracker",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "options": [
+            "github"
+          ],
+          "type": "option"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "work:label:create",
+      "pluginAlias": "sdlc-cli",
+      "pluginName": "sdlc-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": false,
+      "relativePath": [
+        "dist",
+        "commands",
+        "work",
+        "label",
+        "create.js"
+      ]
+    },
+    "work:label:delete": {
+      "aliases": [
+        "w:label:delete"
+      ],
+      "args": {
+        "name": {
+          "description": "Label name to delete",
+          "name": "name",
+          "required": true
+        }
+      },
+      "description": "Delete a label",
+      "examples": [
+        "<%= config.bin %> <%= command.id %> bug",
+        "<%= config.bin %> <%= command.id %> old-label"
+      ],
+      "flags": {
+        "tracker": {
+          "char": "t",
+          "description": "Issue tracker to use",
+          "name": "tracker",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "options": [
+            "github"
+          ],
+          "type": "option"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "work:label:delete",
+      "pluginAlias": "sdlc-cli",
+      "pluginName": "sdlc-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": false,
+      "relativePath": [
+        "dist",
+        "commands",
+        "work",
+        "label",
+        "delete.js"
+      ]
+    },
+    "work:label:get": {
+      "aliases": [
+        "w:label:get"
+      ],
+      "args": {
+        "name": {
+          "description": "Label name",
+          "name": "name",
+          "required": true
+        }
+      },
+      "description": "Get details about a specific label",
+      "examples": [
+        "<%= config.bin %> <%= command.id %> bug",
+        "<%= config.bin %> <%= command.id %> enhancement"
+      ],
+      "flags": {
+        "tracker": {
+          "char": "t",
+          "description": "Issue tracker to use",
+          "name": "tracker",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "options": [
+            "github"
+          ],
+          "type": "option"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "work:label:get",
+      "pluginAlias": "sdlc-cli",
+      "pluginName": "sdlc-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": false,
+      "relativePath": [
+        "dist",
+        "commands",
+        "work",
+        "label",
+        "get.js"
+      ]
+    },
+    "work:label": {
+      "aliases": [],
+      "args": {},
+      "description": "Label management commands",
+      "examples": [
+        "<%= config.bin %> <%= command.id %> list",
+        "<%= config.bin %> <%= command.id %> get bug",
+        "<%= config.bin %> <%= command.id %> create --name \"feature\" --color \"a2eeef\"",
+        "<%= config.bin %> <%= command.id %> update bug --color \"d73a4a\"",
+        "<%= config.bin %> <%= command.id %> delete bug"
+      ],
+      "flags": {},
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "work:label",
+      "pluginAlias": "sdlc-cli",
+      "pluginName": "sdlc-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": false,
+      "relativePath": [
+        "dist",
+        "commands",
+        "work",
+        "label",
+        "index.js"
+      ]
+    },
+    "work:label:list": {
+      "aliases": [
+        "w:label:list"
+      ],
+      "args": {},
+      "description": "List all labels in the repository",
+      "examples": [
+        "<%= config.bin %> <%= command.id %>"
+      ],
+      "flags": {
+        "tracker": {
+          "char": "t",
+          "description": "Issue tracker to use",
+          "name": "tracker",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "options": [
+            "github"
+          ],
+          "type": "option"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "work:label:list",
+      "pluginAlias": "sdlc-cli",
+      "pluginName": "sdlc-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": false,
+      "relativePath": [
+        "dist",
+        "commands",
+        "work",
+        "label",
+        "list.js"
+      ]
+    },
+    "work:label:update": {
+      "aliases": [
+        "w:label:update"
+      ],
+      "args": {
+        "name": {
+          "description": "Label name to update",
+          "name": "name",
+          "required": true
+        }
+      },
+      "description": "Update an existing label",
+      "examples": [
+        "<%= config.bin %> <%= command.id %> bug --color \"d73a4a\"",
+        "<%= config.bin %> <%= command.id %> feature --name \"enhancement\" --description \"New feature or request\""
+      ],
+      "flags": {
+        "new-name": {
+          "description": "New label name",
+          "name": "new-name",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "color": {
+          "char": "c",
+          "description": "New label color (hex code without #)",
+          "name": "color",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "description": {
+          "char": "d",
+          "description": "New label description",
+          "name": "description",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "tracker": {
+          "char": "t",
+          "description": "Issue tracker to use",
+          "name": "tracker",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "options": [
+            "github"
+          ],
+          "type": "option"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "work:label:update",
+      "pluginAlias": "sdlc-cli",
+      "pluginName": "sdlc-cli",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": false,
+      "relativePath": [
+        "dist",
+        "commands",
+        "work",
+        "label",
+        "update.js"
+      ]
+    }
+  },
+  "version": "1.0.0"
+}

@@ -1,0 +1,60 @@
+{
+  "name": "sdlc-cli",
+  "version": "1.0.0",
+  "description": "Software Development Life Cycle CLI tool for release management",
+  "main": "dist/index.js",
+  "bin": {
+    "sdlc": "./bin/run.js"
+  },
+  "files": [
+    "/bin",
+    "/dist",
+    "/oclif.manifest.json",
+    "/npm-shrinkwrap.json"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "postpack": "rm -f oclif.manifest.json",
+    "prepack": "npm run build",
+    "version": "oclif manifest && git add oclif.manifest.json",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@oclif/core": "^3.0.0"
+  },
+  "devDependencies": {
+    "@oclif/plugin-help": "^6.0.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "oclif": {
+    "bin": "sdlc",
+    "commands": "./dist/commands",
+    "topics": {
+      "release-helper": {
+        "description": "Release workflow management commands"
+      }
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CobyR/sdlc-cli.git"
+  },
+  "keywords": [
+    "sdlc",
+    "cli",
+    "release",
+    "version",
+    "workflow"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/CobyR/sdlc-cli/issues"
+  },
+  "homepage": "https://github.com/CobyR/sdlc-cli#readme"
+}

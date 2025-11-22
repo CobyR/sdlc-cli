@@ -20,7 +20,7 @@ export default class Preview extends Command {
     language: Flags.string({
       char: 'l',
       description: 'Programming language for version management',
-      options: ['python'],
+      options: ['python', 'nodejs', 'typescript'],
     }),
     user: Flags.string({
       char: 'u',

@@ -1,5 +1,5 @@
-import {readFile, access} from 'fs/promises'
-import {join} from 'path'
+import {readFile, writeFile, access, mkdir} from 'fs/promises'
+import {join, dirname} from 'path'
 import {constants} from 'fs'
 import {SDLCConfig, DEFAULT_CONFIG} from './types'
 
@@ -90,6 +90,60 @@ export async function getConfig(rootDir: string = process.cwd()): Promise<SDLCCo
     language: getConfigValue(config, 'language', DEFAULT_CONFIG.language!),
     tracker: getConfigValue(config, 'tracker', DEFAULT_CONFIG.tracker!),
     repo: getConfigValue(config, 'repo', undefined),
+  }
+}
+
+/**
+ * Save config to .sdlc.json file
+ * @param config - Config object to save
+ * @param rootDir - Root directory to save config (default: process.cwd())
+ */
+export async function saveConfig(config: SDLCConfig, rootDir: string = process.cwd()): Promise<void> {
+  const configPath = join(rootDir, CONFIG_FILE_NAME)
+  
+  // Validate before saving
+  validateConfig(config)
+  
+  // Ensure directory exists
+  await mkdir(dirname(configPath), {recursive: true})
+  
+  // Write config file with pretty formatting
+  const content = JSON.stringify(config, null, 2) + '\n'
+  await writeFile(configPath, content, 'utf-8')
+}
+
+/**
+ * Update a specific config value
+ * @param key - Config key to update
+ * @param value - New value (undefined to remove)
+ * @param rootDir - Root directory (default: process.cwd())
+ */
+export async function updateConfigValue(key: keyof SDLCConfig, value: string | undefined, rootDir: string = process.cwd()): Promise<void> {
+  const currentConfig = await loadConfig(rootDir) || {}
+  
+  if (value === undefined) {
+    // Remove the key
+    delete currentConfig[key]
+  } else {
+    // Set the key
+    ;(currentConfig as any)[key] = value
+  }
+  
+  // Only save if there are any keys left, otherwise delete the file
+  const hasKeys = Object.keys(currentConfig).length > 0
+  if (hasKeys) {
+    await saveConfig(currentConfig, rootDir)
+  } else {
+    // Delete empty config file
+    const configPath = join(rootDir, CONFIG_FILE_NAME)
+    try {
+      const {unlink} = await import('fs/promises')
+      await unlink(configPath)
+    } catch (error: any) {
+      if (error.code !== 'ENOENT') {
+        throw error
+      }
+    }
   }
 }
 

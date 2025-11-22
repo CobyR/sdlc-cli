@@ -1,11 +1,11 @@
 export interface SDLCConfig {
-  language?: 'python' | string
+  language?: 'python' | 'nodejs' | 'typescript' | string
   tracker?: 'github' | string
   repo?: string
 }
 
 export const DEFAULT_CONFIG: SDLCConfig = {
-  language: 'python',
+  language: 'nodejs',
   tracker: 'github',
 }
 

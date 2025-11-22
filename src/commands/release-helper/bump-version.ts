@@ -20,7 +20,7 @@ export default class BumpVersion extends Command {
     language: Flags.string({
       char: 'l',
       description: 'Programming language for version management',
-      options: ['python'],
+      options: ['python', 'nodejs', 'typescript'],
     }),
     major: Flags.integer({
       char: 'M',

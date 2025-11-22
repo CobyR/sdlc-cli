@@ -9,7 +9,7 @@ SDLC CLI is built using [OCLIF (The Open CLI Framework)](https://oclif.io/) and 
 ## Features
 
 - **Release Workflow Management**: Enforces proper release workflows and prevents common mistakes
-- **Version Management**: Language-specific version bumping (Python support included)
+- **Version Management**: Language-specific version bumping (Node.js/TypeScript and Python support included)
 - **Issue Tracker Integration**: Extensible framework for different issue tracking systems (GitHub Issues implemented)
 - **Git Integration**: Branch management, change analysis, and PR creation
 - **Workflow Enforcement**: Prevents commits to main branch, ensures PRs exist, validates version bumps
@@ -37,14 +37,14 @@ Create a `.sdlc.json` file in your project root:
 
 ```json
 {
-  "language": "python",
+  "language": "nodejs",
   "tracker": "github",
   "repo": "owner/repo-name"
 }
 ```
 
 **Fields:**
-- `language`: Default programming language for version management (default: `"python"`)
+- `language`: Default programming language for version management (default: `"nodejs"`). Supported values: `nodejs`, `typescript`, `python`
 - `tracker`: Default issue tracker to use (default: `"github"`)
 - `repo`: Optional GitHub repository identifier in `owner/repo-name` format (auto-detected from git if not provided)
 
@@ -60,14 +60,14 @@ Configuration values are resolved in the following order (highest to lowest prio
 With a config file:
 ```json
 {
-  "language": "python",
+  "language": "nodejs",
   "tracker": "github"
 }
 ```
 
 Commands will use these defaults:
 ```bash
-# Uses config defaults (python, github)
+# Uses config defaults (nodejs, github)
 sdlc release-helper bump-version --message "Release"
 
 # Overrides config language
@@ -109,7 +109,7 @@ sdlc release-helper bump-version --language python --major 2 --minor 0 --patch 0
 ```
 
 Options:
-- `--language`: Programming language for version management (default: from config or `python`)
+- `--language`: Programming language for version management (default: from config or `nodejs`)
 - `--major`, `--minor`, `--patch`: Version numbers
 - `--version`: Specific version to set
 - `--message`: Release message (required)
@@ -128,7 +128,7 @@ sdlc release-helper cleanup --force
 Options:
 - `--force`: Skip confirmation
 - `--tracker`: Issue tracker to use (default: from config or `github`)
-- `--language`: Programming language (default: from config or `python`)
+- `--language`: Programming language (default: from config or `nodejs`)
 - `--user`: User to cleanup issues for
 
 #### `preview`
@@ -234,14 +234,75 @@ Options:
 
 At least one update field must be provided.
 
+### `config`
+
+Configuration management commands for `.sdlc.json` file.
+
+#### `list`
+
+List current configuration values with their sources.
+
+```bash
+sdlc config list
+```
+
+Shows all configuration values and indicates whether they come from the config file, are defaults, or are not set.
+
+#### `get`
+
+Get a specific configuration value.
+
+```bash
+sdlc config get language
+sdlc config get tracker
+sdlc config get repo
+sdlc config get language --show-source
+```
+
+Options:
+- `key`: Configuration key to get (language, tracker, repo) (required)
+- `--show-source`: Show where the value comes from (config file, default, etc.)
+
+#### `set`
+
+Set a configuration value.
+
+```bash
+sdlc config set language python
+sdlc config set tracker github
+sdlc config set repo owner/repo-name
+```
+
+Options:
+- `key`: Configuration key to set (language, tracker, repo) (required)
+- `value`: Value to set (required)
+
+Creates or updates the `.sdlc.json` file in the project root.
+
+#### `unset`
+
+Remove a configuration value (revert to default).
+
+```bash
+sdlc config unset language
+sdlc config unset tracker
+sdlc config unset repo
+```
+
+Options:
+- `key`: Configuration key to remove (language, tracker, repo) (required)
+
+Removes the key from the config file. If the config file becomes empty, it is deleted.
+
 ## Architecture
 
 ### Version Management
 
 Extensible framework for language-specific version management:
 - `VersionManager` interface defines the contract
-- `PythonVersionManager` implements Python project versioning
-- Easy to add support for other languages (Node.js, Go, etc.)
+- `NodeVersionManager` implements Node.js/TypeScript project versioning (package.json, CHANGELOG.md)
+- `PythonVersionManager` implements Python project versioning (pyproject.toml, setup.py, version_notes.md)
+- Easy to add support for other languages (Go, Rust, etc.)
 
 ### Issue Tracker Integration
 
@@ -273,7 +334,8 @@ sdlc-cli/
 ├── src/
 │   ├── commands/
 │   │   ├── release-helper/    # Release helper commands
-│   │   └── work/              # Work item management commands
+│   │   ├── work/              # Work item management commands
+│   │   └── config/            # Configuration management commands
 │   ├── lib/
 │   │   ├── config/            # Configuration management
 │   │   ├── version/           # Version management

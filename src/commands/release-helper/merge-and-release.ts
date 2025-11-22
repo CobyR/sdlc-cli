@@ -31,10 +31,12 @@ export default class MergeAndRelease extends Command {
     }
 
     // Check version bump
+    // Check multiple recent commits (up to 10) to find version bump
     try {
-      const {stdout} = await execAsync('git log --oneline -1 --name-only')
+      const {stdout} = await execAsync('git log --oneline -10 --name-only')
       const recentFiles = stdout.toLowerCase()
-      const versionFilesUpdated = ['version_notes.md', 'setup.py', 'pyproject.toml', 'metadata', 'package.json'].some(
+      const versionFiles = ['version_notes.md', 'setup.py', 'pyproject.toml', 'metadata', 'package.json', 'changelog.md']
+      const versionFilesUpdated = versionFiles.some(
         file => recentFiles.includes(file.toLowerCase())
       )
 

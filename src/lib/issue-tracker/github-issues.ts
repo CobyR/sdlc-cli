@@ -119,6 +119,20 @@ export class GitHubIssuesTracker implements IssueTracker {
 
   async updateIssue(id: string, updates: IssueUpdate): Promise<Issue> {
     try {
+      // If updating assignee, first get current issue to check for existing assignees
+      if (updates.assignee) {
+        const currentIssue = await this.getIssueById(id)
+        if (currentIssue && currentIssue.assignee) {
+          // Remove existing assignee first
+          const removeCommand = `gh issue edit ${id} --repo ${this.repo} --remove-assignee ${currentIssue.assignee}`
+          try {
+            await execAsync(removeCommand)
+          } catch (error: any) {
+            // Ignore errors if assignee removal fails (might not exist)
+          }
+        }
+      }
+
       let command = `gh issue edit ${id} --repo ${this.repo}`
       
       if (updates.title) {
@@ -138,7 +152,7 @@ export class GitHubIssuesTracker implements IssueTracker {
       }
       
       if (updates.assignee) {
-        command += ` --assignee ${updates.assignee}`
+        command += ` --add-assignee ${updates.assignee}`
       }
       
       if (updates.labels && updates.labels.length > 0) {

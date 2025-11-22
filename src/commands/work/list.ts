@@ -89,21 +89,38 @@ export default class WorkList extends Command {
 
   private getStatusIcon(issue: any): string {
     // Determine status icon based on issue state and labels
-    // Green for closed/completed, Yellow for in-progress, Red for open/new
+    // Green for closed/completed, Orange for fixed, Yellow for blocked, Blue for in-progress, Red for open/new
     const statusLower = issue.status.toLowerCase()
     if (statusLower === 'closed') {
       return '🟢' // Green for completed/closed
     } else {
-      // Check if issue has in-progress label
-      const hasInProgressLabel = issue.labels?.some((label: string) => 
-        label.toLowerCase().includes('in progress') || 
-        label.toLowerCase().includes('in-progress') ||
-        label.toLowerCase() === 'in-progress' ||
-        label.toLowerCase() === 'in progress'
+      // Check labels for status indicators
+      const labels = issue.labels?.map((l: string) => l.toLowerCase()) || []
+      
+      // Check if issue has fixed label (orange)
+      const hasFixedLabel = labels.some((label: string) => 
+        label === 'fixed'
       )
       
-      if (hasInProgressLabel) {
-        return '🟡' // Yellow for in-progress
+      // Check if issue has blocked label (yellow)
+      const hasBlockedLabel = labels.some((label: string) => 
+        label === 'blocked'
+      )
+      
+      // Check if issue has in-progress label (blue)
+      const hasInProgressLabel = labels.some((label: string) => 
+        label.includes('in progress') || 
+        label.includes('in-progress') ||
+        label === 'in-progress' ||
+        label === 'in progress'
+      )
+      
+      if (hasFixedLabel) {
+        return '🟠' // Orange for fixed
+      } else if (hasBlockedLabel) {
+        return '🟡' // Yellow for blocked
+      } else if (hasInProgressLabel) {
+        return '🔵' // Blue for in-progress
       } else {
         return '🔴' // Red for new/open
       }

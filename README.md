@@ -243,7 +243,7 @@ Displays full issue details including title, status, assignee, labels, author, U
 
 #### `update`
 
-Update a work item/issue.
+Update work item(s)/issue(s). Supports batch updates by providing multiple issue IDs.
 
 ```bash
 sdlc work update --id 42 --title "New title"
@@ -251,10 +251,13 @@ sdlc work update --id 42 --state closed
 sdlc work update --id 42 --assignee username
 sdlc work update --id 42 --label "bug" --label "priority:high"
 sdlc work update --id 42 --remove-label "bug"
+# Batch update multiple issues
+sdlc work update --id 1 --id 2 --id 3 --assignee username
+sdlc work update --id 1,2,3 --label "in-progress"
 ```
 
 Options:
-- `--id`: Issue ID/number (required)
+- `--id`: Issue ID/number (required, can be used multiple times or comma-separated)
 - `--title`: Update issue title
 - `--body`: Update issue body/description
 - `--state`: Update issue state (open, closed)
@@ -263,7 +266,7 @@ Options:
 - `--remove-label`: Remove label (can be used multiple times)
 - `--tracker`: Issue tracker to use (default: from config or `github`)
 
-At least one update field must be provided.
+At least one update field must be provided. When updating multiple issues, the same updates are applied to all specified issues. Results show success/failure for each issue.
 
 #### `label`
 

@@ -3,7 +3,7 @@ import {getIssueTracker, SupportedTracker} from '../../lib/issue-tracker'
 import {getConfig} from '../../lib/config'
 
 export default class WorkUpdate extends Command {
-  static description = 'Update a work item/issue'
+  static description = 'Update work item(s)/issue(s)'
 
   static aliases = ['w:update']
 
@@ -13,13 +13,16 @@ export default class WorkUpdate extends Command {
     '<%= config.bin %> <%= command.id %> --id 42 --assignee username',
     '<%= config.bin %> <%= command.id %> --id 42 --label "bug" --label "priority:high"',
     '<%= config.bin %> <%= command.id %> --id 42 --remove-label "bug"',
+    '<%= config.bin %> <%= command.id %> --id 1 --id 2 --id 3 --assignee username',
+    '<%= config.bin %> <%= command.id %> --id 1,2,3 --label "in-progress"',
   ]
 
   static flags = {
     id: Flags.string({
       char: 'i',
-      description: 'Issue ID/number',
+      description: 'Issue ID/number (can be used multiple times or comma-separated)',
       required: true,
+      multiple: true,
     }),
     title: Flags.string({
       char: 't',
@@ -69,6 +72,21 @@ export default class WorkUpdate extends Command {
       this.error('❌ At least one update field must be provided (--title, --body, --state, --assignee, --label, or --remove-label)')
     }
 
+    // Parse issue IDs - support multiple flags and comma-separated values
+    const issueIds: string[] = []
+    for (const idFlag of flags.id) {
+      // Split by comma and add each ID
+      const ids = idFlag.split(',').map(id => id.trim()).filter(id => id.length > 0)
+      issueIds.push(...ids)
+    }
+
+    if (issueIds.length === 0) {
+      this.error('❌ At least one issue ID must be provided')
+    }
+
+    // Remove duplicates
+    const uniqueIds = [...new Set(issueIds)]
+
     const updates: any = {}
 
     if (flags.title) {
@@ -95,21 +113,54 @@ export default class WorkUpdate extends Command {
       updates.removeLabels = flags['remove-label']
     }
 
-    this.log(`📝 Updating issue #${flags.id}...\n`)
+    // Batch update all issues
+    const isBatch = uniqueIds.length > 1
+    if (isBatch) {
+      this.log(`📝 Updating ${uniqueIds.length} issue(s)...\n`)
+    }
 
-    try {
-      const updatedIssue = await issueTracker.updateIssue(flags.id, updates)
+    const results: Array<{id: string; success: boolean; issue?: any; error?: string}> = []
 
-      this.log('✅ Issue updated successfully!\n')
-      
-      const statusIcon = updatedIssue.status === 'open' ? '🟢' : '🔴'
-      this.log(`${statusIcon} [#${updatedIssue.id}] ${updatedIssue.title}`)
-      
-      if (updatedIssue.url) {
-        this.log(`   ${updatedIssue.url}`)
+    for (const issueId of uniqueIds) {
+      if (!isBatch) {
+        this.log(`📝 Updating issue #${issueId}...\n`)
       }
-    } catch (error: any) {
-      this.error(`❌ Failed to update issue: ${error.message}`)
+
+      try {
+        const updatedIssue = await issueTracker.updateIssue(issueId, updates)
+        results.push({id: issueId, success: true, issue: updatedIssue})
+      } catch (error: any) {
+        results.push({id: issueId, success: false, error: error.message})
+      }
+    }
+
+    // Display results
+    const successful = results.filter(r => r.success)
+    const failed = results.filter(r => !r.success)
+
+    if (successful.length > 0) {
+      this.log(`✅ Successfully updated ${successful.length} issue(s):\n`)
+      successful.forEach(result => {
+        if (result.issue) {
+          const statusIcon = result.issue.status === 'open' ? '🟢' : '🔴'
+          this.log(`${statusIcon} [#${result.issue.id}] ${result.issue.title}`)
+          if (result.issue.url) {
+            this.log(`   ${result.issue.url}`)
+          }
+        }
+      })
+    }
+
+    if (failed.length > 0) {
+      this.log(`\n❌ Failed to update ${failed.length} issue(s):\n`)
+      failed.forEach(result => {
+        this.log(`   #${result.id}: ${result.error}`)
+      })
+    }
+
+    // Exit with error if any failed
+    if (failed.length > 0) {
+      this.exit(1)
     }
   }
 }

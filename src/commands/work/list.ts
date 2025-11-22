@@ -89,12 +89,12 @@ export default class WorkList extends Command {
 
   private getStatusIcon(issue: any): string {
     // Determine status icon based on issue state and labels
-    // Green for closed/completed, Orange for fixed, Yellow for blocked, Blue for in-progress, Red for open/new
+    // Green for closed/completed (overrides labels), Orange for fixed, Yellow for blocked, Blue for in-progress, Red for open/new
     const statusLower = issue.status.toLowerCase()
     if (statusLower === 'closed') {
-      return '🟢' // Green for completed/closed
+      return '🟢' // Green for completed/closed (overrides all labels)
     } else {
-      // Check labels for status indicators
+      // Check labels for status indicators (only for open issues)
       const labels = issue.labels?.map((l: string) => l.toLowerCase()) || []
       
       // Check if issue has fixed label (orange)

@@ -61,22 +61,28 @@ If not on main branch, proceed with the following:
 
 ## Step 5: Handle Issue Association
 
+**REQUIREMENT: ALL commit messages MUST include an issue number. No exceptions.**
+
 **If matching issues are found:**
 - Select the most relevant issue (or issues if multiple apply).
 - Create a commit message that incorporates the issue number(s):
   - Format: `[#ISSUE_NUMBER] Brief description of changes`
   - Example: `[#42] Add Python version manager implementation`
   - If multiple issues: `[#42][#43] Implement version manager and GitHub issues tracker`
+- **DO NOT proceed without an issue number in the commit message.**
 
 **If no matching issues are found:**
-1. Create a new GitHub issue that describes the work:
+1. **YOU MUST create a new GitHub issue** that describes the work:
    - Title: Brief description of what was done
    - Body: Detailed description based on the work summary from Step 3
    - Include relevant labels if possible (e.g., "feature", "bug", "sdlc-cli", "enhancement")
-2. Mark the issue as completed/closed immediately after creation.
+2. **DO NOT mark the issue as closed** - leave it open (it will be closed when released).
 3. Incorporate the new issue number into the commit message:
    - Format: `[#NEW_ISSUE_NUMBER] Brief description of changes`
    - Example: `[#45] Refactor issue tracker abstraction`
+4. **DO NOT proceed to commit without creating an issue first.**
+
+**Critical Rule**: If you cannot access GitHub issues (no API access, CLI not available, etc.), you MUST notify the user and **STOP**. Do not commit without an issue number. The user must manually create an issue or fix the GitHub access problem before proceeding.
 
 ## Step 6: Run Type Check
 
@@ -132,9 +138,11 @@ If not on main branch, proceed with the following:
 
 ## Notes
 
+- **MANDATORY**: ALL commit messages MUST include an issue number in the format `[#ISSUE_NUMBER]`. This is a hard requirement with no exceptions.
 - Always use descriptive commit messages that explain what was done and why.
-- If unable to access GitHub issues (no API access, CLI not available, etc.), notify the user and proceed with a descriptive commit message without issue numbers, suggesting manual issue creation.
+- **DO NOT commit without an issue number** - if GitHub access is unavailable, you must stop and notify the user to fix the access issue or manually create an issue.
 - The commit message should be clear enough that someone reviewing the git log can understand what changed.
 - **Type Safety**: Always run `npm run build` before committing to catch TypeScript errors early. This prevents build failures in CI/CD pipelines.
 - This workflow is specific to the `sdlc-cli` project and should be used when working within this repository.
 - For CLI projects, focus on command implementations, library abstractions, and workflow enforcement features.
+- When creating new issues for work, leave them open (do not close immediately) - they will be marked with the "fixed" label and closed when released.

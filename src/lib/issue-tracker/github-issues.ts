@@ -13,24 +13,30 @@ export class GitHubIssuesTracker implements IssueTracker {
 
   async getFixedIssues(user?: string): Promise<Issue[]> {
     try {
-      // Use gh CLI to get issues
-      let query = 'is:issue is:closed'
+      // Get open issues with "fixed" label - these are fixed in code but not yet released
+      // They will be closed when released
+      let command = `gh issue list --repo ${this.repo} --state open --json number,title,url,state,assignees,labels --limit 100`
       if (user) {
-        query += ` assignee:${user}`
+        command += ` --assignee ${user}`
       }
 
-      const {stdout} = await execAsync(`gh issue list --repo ${this.repo} --state closed --json number,title,url,state,assignees,labels --limit 100`)
+      const {stdout} = await execAsync(command)
       const issues = JSON.parse(stdout)
 
       return issues
         .filter((issue: any) => {
-          // Filter for issues that are closed but not yet released
-          // In GitHub, we'll look for issues with "Fixed" label or similar
+          // Filter for issues with "fixed" label (case-insensitive)
           const hasFixedLabel = issue.labels?.some((label: any) => 
-            label.name.toLowerCase().includes('fixed') || 
-            label.name.toLowerCase().includes('resolved')
+            label.name.toLowerCase() === 'fixed'
           )
-          return hasFixedLabel || issue.state === 'closed'
+          // Check state (case-insensitive)
+          const isOpen = issue.state?.toLowerCase() === 'open'
+          // Also filter by assignee if specified
+          if (user) {
+            const assignee = issue.assignees?.[0]?.login
+            return hasFixedLabel && isOpen && assignee === user
+          }
+          return hasFixedLabel && isOpen
         })
         .map((issue: any) => ({
           id: issue.number.toString(),

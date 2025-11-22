@@ -1,5 +1,6 @@
 {
   "tracker": "github",
   "repo": "CobyR/sdlc-cli",
-  "language": "nodejs"
+  "language": "nodejs",
+  "view": "table"
 }

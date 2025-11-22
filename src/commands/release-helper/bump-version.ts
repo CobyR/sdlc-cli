@@ -118,6 +118,10 @@ export default class BumpVersion extends Command {
     if (!flags['no-commit']) {
       await this.commitVersionChanges(nextVersion, versionManager.getVersionFiles())
       this.log('\n✅ Version changes committed')
+      
+      // Push to origin
+      await this.pushToOrigin()
+      this.log('✅ Version changes pushed to origin')
     } else {
       this.log('\n⚠️  Skipping automatic commit (--no-commit flag used)')
       this.log('   Please review the changes and commit them manually.')
@@ -137,6 +141,26 @@ export default class BumpVersion extends Command {
     } catch (error: any) {
       this.warn(`⚠️  Error committing changes: ${error.message}`)
       this.log('   Please commit the changes manually.')
+      throw error // Re-throw to prevent push if commit failed
+    }
+  }
+
+  private async pushToOrigin(): Promise<void> {
+    try {
+      // Get current branch name
+      const {stdout: branch} = await execAsync('git branch --show-current')
+      const currentBranch = branch.trim()
+      
+      if (!currentBranch) {
+        throw new Error('Unable to determine current branch')
+      }
+
+      // Push to origin
+      await execAsync(`git push origin ${currentBranch}`)
+    } catch (error: any) {
+      this.warn(`⚠️  Error pushing to origin: ${error.message}`)
+      this.log('   Please push the changes manually: git push origin <branch>')
+      throw error
     }
   }
 }

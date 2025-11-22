@@ -72,10 +72,31 @@ export default class WorkList extends Command {
       }
 
       this.log(`Found ${issues.length} issue(s):\n`)
-      this.log('─'.repeat(80))
+      this.log('-'.repeat(80))
 
       issues.forEach(issue => {
-        const statusIcon = issue.status === 'open' ? '🟢' : '🔴'
+        // Determine status icon based on issue state and labels
+        // Green for closed/completed, Yellow for in-progress, Red for open/new
+        let statusIcon: string
+        const statusLower = issue.status.toLowerCase()
+        if (statusLower === 'closed') {
+          statusIcon = '🟢' // Green for completed/closed
+        } else {
+          // Check if issue has in-progress label
+          const hasInProgressLabel = issue.labels?.some(label => 
+            label.toLowerCase().includes('in progress') || 
+            label.toLowerCase().includes('in-progress') ||
+            label.toLowerCase() === 'in-progress' ||
+            label.toLowerCase() === 'in progress'
+          )
+          
+          if (hasInProgressLabel) {
+            statusIcon = '🟡' // Yellow for in-progress
+          } else {
+            statusIcon = '🔴' // Red for new/open
+          }
+        }
+        
         const assigneeText = issue.assignee ? ` @${issue.assignee}` : ' (unassigned)'
         const labelsText = issue.labels && issue.labels.length > 0 
           ? ` [${issue.labels.join(', ')}]` 
@@ -88,7 +109,7 @@ export default class WorkList extends Command {
         this.log('')
       })
 
-      this.log('─'.repeat(80))
+      this.log('-'.repeat(80))
     } catch (error: any) {
       this.error(`❌ Failed to list issues: ${error.message}`)
     }

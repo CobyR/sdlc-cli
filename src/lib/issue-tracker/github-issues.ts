@@ -58,10 +58,7 @@ export class GitHubIssuesTracker implements IssueTracker {
       const issueId = issue.number || issue.id
       const comment = `Shipped with Release '${version}'`
       
-      // Add comment first
-      await execAsync(`gh issue comment ${issueId} --repo ${this.repo} --body "${comment.replace(/"/g, '\\"')}"`)
-      
-      // Close the issue
+      // Close the issue with a comment
       await execAsync(`gh issue close ${issueId} --repo ${this.repo} --comment "${comment.replace(/"/g, '\\"')}"`)
     } catch (error: any) {
       throw new Error(`Failed to close issue ${issue.id}: ${error.message}`)

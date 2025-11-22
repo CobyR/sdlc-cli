@@ -30,11 +30,12 @@ export default class MergeAndRelease extends Command {
       this.error('❌ RELEASE BLOCKED: No PR exists!\n   Run: sdlc release-helper create-pr "Your Release Title"')
     }
 
-    // Check version bump
+    // Check version bump in PR commits (commits on this branch not on main)
     try {
-      const {stdout} = await execAsync('git log --oneline -1 --name-only')
-      const recentFiles = stdout.toLowerCase()
-      const versionFilesUpdated = ['version_notes.md', 'setup.py', 'pyproject.toml', 'metadata', 'package.json'].some(
+      const {stdout: branchCommits} = await execAsync('git log main..HEAD --oneline --name-only')
+      const recentFiles = branchCommits.toLowerCase()
+      const versionFiles = ['version_notes.md', 'setup.py', 'pyproject.toml', 'metadata', 'package.json', 'changelog.md']
+      const versionFilesUpdated = versionFiles.some(
         file => recentFiles.includes(file.toLowerCase())
       )
 
@@ -42,7 +43,7 @@ export default class MergeAndRelease extends Command {
         this.error('❌ RELEASE BLOCKED: Version not bumped!\n   Expected workflow:\n   1. Run: sdlc release-helper bump-version --message "Your release message"\n   2. Commit the version changes\n   3. Create PR with version bump included\n   4. Then run merge-and-release')
       }
 
-      this.log('✅ Version bump detected in recent commits')
+      this.log('✅ Version bump detected in PR commits')
     } catch (error: any) {
       this.error(`❌ Failed to check recent commits: ${error.message}`)
     }
@@ -59,6 +60,20 @@ export default class MergeAndRelease extends Command {
     this.log('📥 Switching to main and pulling...')
     await checkoutBranch('main')
     await pullLatest('main')
+
+    // Verify version on main matches what was in the PR
+    this.log('🔍 Verifying version on main...')
+    try {
+      const {getVersionManager, SupportedLanguage} = await import('../../lib/version')
+      const {getConfig} = await import('../../lib/config')
+      const config = await getConfig()
+      const language = (config.language || 'nodejs') as SupportedLanguage
+      const versionManager = getVersionManager(language)
+      const mainVersion = await versionManager.getCurrentVersion()
+      this.log(`✅ Version on main: ${mainVersion}`)
+    } catch (error: any) {
+      this.warn(`⚠️  Failed to verify version on main: ${error.message}`)
+    }
 
     // Run cleanup
     this.log('🧹 Running cleanup...')

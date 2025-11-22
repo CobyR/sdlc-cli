@@ -1,0 +1,27 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [1.0.1] - November 22, 2025
+
+Initial implementation with release-helper and work/issue tracking
+
+### Changes
+
+* [13](https://github.com/CobyR/sdlc-cli/issues/13) - Update release-helper preview to show open issues with fixed label
+* [12](https://github.com/CobyR/sdlc-cli/issues/12) - Add blocked label and update status indicator colors
+* [11](https://github.com/CobyR/sdlc-cli/issues/11) - Fix assignee update in work update command
+* [10](https://github.com/CobyR/sdlc-cli/issues/10) - Add batch update support to work update command
+* [9](https://github.com/CobyR/sdlc-cli/issues/9) - Add table/column view option to work list command
+* [8](https://github.com/CobyR/sdlc-cli/issues/8) - Improve work list status indicators with color coding
+* [7](https://github.com/CobyR/sdlc-cli/issues/7) - Add label management commands to work command set
+* [6](https://github.com/CobyR/sdlc-cli/issues/6) - Add work create command for issue creation
+* [5](https://github.com/CobyR/sdlc-cli/issues/5) - Add command aliases and work create command
+* [4](https://github.com/CobyR/sdlc-cli/issues/4) - Add config command set and Node.js/TypeScript version manager
+* [3](https://github.com/CobyR/sdlc-cli/issues/3) - Add work command set for issue management
+* [2](https://github.com/CobyR/sdlc-cli/issues/2) - Add project-specific configuration file support
+* [1](https://github.com/CobyR/sdlc-cli/issues/1) - Initial SDLC CLI implementation with OCLIF
+

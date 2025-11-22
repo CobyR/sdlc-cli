@@ -1,6 +1,6 @@
 {
   "name": "sdlc-cli",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Software Development Life Cycle CLI tool for release management",
   "main": "dist/index.js",
   "bin": {
@@ -36,15 +36,21 @@
     "topics": {
       "config": {
         "description": "Configuration management commands",
-        "aliases": ["c"]
+        "aliases": [
+          "c"
+        ]
       },
       "work": {
         "description": "Work item and issue management commands",
-        "aliases": ["w"]
+        "aliases": [
+          "w"
+        ]
       },
       "release-helper": {
         "description": "Release workflow management commands",
-        "aliases": ["rh"]
+        "aliases": [
+          "rh"
+        ]
       }
     }
   },

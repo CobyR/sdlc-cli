@@ -6,6 +6,25 @@ export interface Issue {
   status: string
   assignee?: string
   labels?: string[]
+  body?: string
+  author?: string
+}
+
+export interface IssueFilters {
+  state?: 'open' | 'closed' | 'all'
+  assignee?: string
+  author?: string
+  labels?: string[]
+  limit?: number
+}
+
+export interface IssueUpdate {
+  title?: string
+  body?: string
+  state?: 'open' | 'closed'
+  assignee?: string
+  labels?: string[]
+  removeLabels?: string[]
 }
 
 export interface IssueTracker {
@@ -23,5 +42,15 @@ export interface IssueTracker {
    * Get a specific issue by ID
    */
   getIssueById(id: string): Promise<Issue | null>
+
+  /**
+   * List issues with optional filters
+   */
+  listIssues(filters?: IssueFilters): Promise<Issue[]>
+
+  /**
+   * Update an issue with new properties
+   */
+  updateIssue(id: string, updates: IssueUpdate): Promise<Issue>
 }
 

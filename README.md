@@ -173,6 +173,67 @@ sdlc release-helper start-work --branch-type feature
 Options:
 - `--branch-type`: Type of branch to create (feature, bugfix, hotfix, maintenance)
 
+### `work`
+
+Work item and issue management commands.
+
+#### `list`
+
+List work items/issues with filtering options.
+
+```bash
+sdlc work list
+sdlc work list --state open
+sdlc work list --assignee username --state open
+sdlc work list --label "bug" --label "priority:high"
+```
+
+Options:
+- `--state`: Filter by issue state (open, closed, all) (default: open)
+- `--assignee`: Filter by assignee username
+- `--author`: Filter by author username
+- `--label`: Filter by label (can be used multiple times)
+- `--limit`: Maximum number of issues to return (default: 30)
+- `--tracker`: Issue tracker to use (default: from config or `github`)
+
+#### `get`
+
+Get detailed information about a specific work item/issue.
+
+```bash
+sdlc work get --id 42
+```
+
+Options:
+- `--id`: Issue ID/number (required)
+- `--tracker`: Issue tracker to use (default: from config or `github`)
+
+Displays full issue details including title, status, assignee, labels, author, URL, and body/description.
+
+#### `update`
+
+Update a work item/issue.
+
+```bash
+sdlc work update --id 42 --title "New title"
+sdlc work update --id 42 --state closed
+sdlc work update --id 42 --assignee username
+sdlc work update --id 42 --label "bug" --label "priority:high"
+sdlc work update --id 42 --remove-label "bug"
+```
+
+Options:
+- `--id`: Issue ID/number (required)
+- `--title`: Update issue title
+- `--body`: Update issue body/description
+- `--state`: Update issue state (open, closed)
+- `--assignee`: Update assignee username
+- `--label`: Add label (can be used multiple times)
+- `--remove-label`: Remove label (can be used multiple times)
+- `--tracker`: Issue tracker to use (default: from config or `github`)
+
+At least one update field must be provided.
+
 ## Architecture
 
 ### Version Management
@@ -211,7 +272,8 @@ npm run build
 sdlc-cli/
 ├── src/
 │   ├── commands/
-│   │   └── release-helper/    # Release helper commands
+│   │   ├── release-helper/    # Release helper commands
+│   │   └── work/              # Work item management commands
 │   ├── lib/
 │   │   ├── config/            # Configuration management
 │   │   ├── version/           # Version management

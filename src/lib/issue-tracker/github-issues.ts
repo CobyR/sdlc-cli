@@ -1,6 +1,6 @@
 import {exec} from 'child_process'
 import {promisify} from 'util'
-import {Issue, IssueTracker} from './types'
+import {Issue, IssueTracker, IssueFilters, IssueUpdate} from './types'
 
 const execAsync = promisify(exec)
 
@@ -61,7 +61,7 @@ export class GitHubIssuesTracker implements IssueTracker {
 
   async getIssueById(id: string): Promise<Issue | null> {
     try {
-      const {stdout} = await execAsync(`gh issue view ${id} --repo ${this.repo} --json number,title,url,state,assignees,labels`)
+      const {stdout} = await execAsync(`gh issue view ${id} --repo ${this.repo} --json number,title,url,state,assignees,labels,body,author`)
       const issue = JSON.parse(stdout)
       
       return {
@@ -72,9 +72,94 @@ export class GitHubIssuesTracker implements IssueTracker {
         status: issue.state,
         assignee: issue.assignees?.[0]?.login,
         labels: issue.labels?.map((l: any) => l.name) || [],
+        body: issue.body || undefined,
+        author: issue.author?.login || undefined,
       }
     } catch (error: any) {
       return null
+    }
+  }
+
+  async listIssues(filters?: IssueFilters): Promise<Issue[]> {
+    try {
+      const state = filters?.state || 'open'
+      const limit = filters?.limit || 30
+      
+      let command = `gh issue list --repo ${this.repo} --state ${state} --json number,title,url,state,assignees,labels,author --limit ${limit}`
+      
+      if (filters?.assignee) {
+        command += ` --assignee ${filters.assignee}`
+      }
+      
+      if (filters?.author) {
+        command += ` --author ${filters.author}`
+      }
+      
+      if (filters?.labels && filters.labels.length > 0) {
+        command += ` --label "${filters.labels.join(',')}"`
+      }
+
+      const {stdout} = await execAsync(command)
+      const issues = JSON.parse(stdout)
+
+      return issues.map((issue: any) => ({
+        id: issue.number.toString(),
+        number: issue.number,
+        title: issue.title,
+        url: issue.url,
+        status: issue.state,
+        assignee: issue.assignees?.[0]?.login,
+        labels: issue.labels?.map((l: any) => l.name) || [],
+        author: issue.author?.login || undefined,
+      }))
+    } catch (error: any) {
+      throw new Error(`Failed to list issues: ${error.message}`)
+    }
+  }
+
+  async updateIssue(id: string, updates: IssueUpdate): Promise<Issue> {
+    try {
+      let command = `gh issue edit ${id} --repo ${this.repo}`
+      
+      if (updates.title) {
+        command += ` --title "${updates.title.replace(/"/g, '\\"')}"`
+      }
+      
+      if (updates.body !== undefined) {
+        command += ` --body "${(updates.body || '').replace(/"/g, '\\"')}"`
+      }
+      
+      if (updates.state) {
+        if (updates.state === 'closed') {
+          command += ' --state closed'
+        } else {
+          command += ' --state open'
+        }
+      }
+      
+      if (updates.assignee) {
+        command += ` --assignee ${updates.assignee}`
+      }
+      
+      if (updates.labels && updates.labels.length > 0) {
+        command += ` --add-label "${updates.labels.join(',')}"`
+      }
+      
+      if (updates.removeLabels && updates.removeLabels.length > 0) {
+        command += ` --remove-label "${updates.removeLabels.join(',')}"`
+      }
+
+      await execAsync(command)
+      
+      // Fetch updated issue
+      const updatedIssue = await this.getIssueById(id)
+      if (!updatedIssue) {
+        throw new Error(`Failed to retrieve updated issue ${id}`)
+      }
+      
+      return updatedIssue
+    } catch (error: any) {
+      throw new Error(`Failed to update issue ${id}: ${error.message}`)
     }
   }
 

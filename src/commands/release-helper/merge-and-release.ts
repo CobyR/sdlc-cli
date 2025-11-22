@@ -64,10 +64,10 @@ export default class MergeAndRelease extends Command {
     // Verify version on main matches what was in the PR
     this.log('🔍 Verifying version on main...')
     try {
-      const {getVersionManager, SupportedLanguage} = await import('../../lib/version')
+      const {getVersionManager} = await import('../../lib/version')
       const {getConfig} = await import('../../lib/config')
       const config = await getConfig()
-      const language = (config.language || 'nodejs') as SupportedLanguage
+      const language = (config.language || 'nodejs') as 'python' | 'nodejs' | 'typescript'
       const versionManager = getVersionManager(language)
       const mainVersion = await versionManager.getCurrentVersion()
       this.log(`✅ Version on main: ${mainVersion}`)

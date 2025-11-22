@@ -1,6 +1,6 @@
 import {exec} from 'child_process'
 import {promisify} from 'util'
-import {Issue, IssueTracker, IssueFilters, IssueUpdate, IssueCreate} from './types'
+import {Issue, IssueTracker, IssueFilters, IssueUpdate, IssueCreate, Label, LabelUpdate} from './types'
 
 const execAsync = promisify(exec)
 
@@ -205,6 +205,106 @@ export class GitHubIssuesTracker implements IssueTracker {
       return createdIssue
     } catch (error: any) {
       throw new Error(`Failed to create issue: ${error.message}`)
+    }
+  }
+
+  async listLabels(): Promise<Label[]> {
+    try {
+      const {stdout} = await execAsync(`gh label list --repo ${this.repo} --json name,color,description`)
+      const labels = JSON.parse(stdout)
+      
+      return labels.map((label: any) => ({
+        name: label.name,
+        color: label.color,
+        description: label.description || undefined,
+      }))
+    } catch (error: any) {
+      throw new Error(`Failed to list labels: ${error.message}`)
+    }
+  }
+
+  async getLabel(name: string): Promise<Label | null> {
+    try {
+      const {stdout} = await execAsync(`gh label list --repo ${this.repo} --json name,color,description`)
+      const labels = JSON.parse(stdout)
+      const label = labels.find((l: any) => l.name === name)
+      
+      if (!label) {
+        return null
+      }
+      
+      return {
+        name: label.name,
+        color: label.color,
+        description: label.description || undefined,
+      }
+    } catch (error: any) {
+      throw new Error(`Failed to get label: ${error.message}`)
+    }
+  }
+
+  async createLabel(label: Label): Promise<Label> {
+    try {
+      let command = `gh label create "${label.name}" --repo ${this.repo}`
+      
+      if (label.color) {
+        command += ` --color ${label.color.replace('#', '')}`
+      }
+      
+      if (label.description) {
+        command += ` --description "${label.description.replace(/"/g, '\\"')}"`
+      }
+
+      await execAsync(command)
+      
+      // Fetch the created label to return full details
+      const createdLabel = await this.getLabel(label.name)
+      if (!createdLabel) {
+        throw new Error(`Failed to retrieve created label ${label.name}`)
+      }
+      
+      return createdLabel
+    } catch (error: any) {
+      throw new Error(`Failed to create label: ${error.message}`)
+    }
+  }
+
+  async updateLabel(name: string, updates: LabelUpdate): Promise<Label> {
+    try {
+      let command = `gh label edit "${name}" --repo ${this.repo}`
+      
+      if (updates.name) {
+        command += ` --name "${updates.name.replace(/"/g, '\\"')}"`
+      }
+      
+      if (updates.color) {
+        command += ` --color ${updates.color.replace('#', '')}`
+      }
+      
+      if (updates.description !== undefined) {
+        command += ` --description "${(updates.description || '').replace(/"/g, '\\"')}"`
+      }
+
+      await execAsync(command)
+      
+      // Fetch updated label (use new name if it was changed)
+      const labelName = updates.name || name
+      const updatedLabel = await this.getLabel(labelName)
+      if (!updatedLabel) {
+        throw new Error(`Failed to retrieve updated label ${labelName}`)
+      }
+      
+      return updatedLabel
+    } catch (error: any) {
+      throw new Error(`Failed to update label: ${error.message}`)
+    }
+  }
+
+  async deleteLabel(name: string): Promise<void> {
+    try {
+      await execAsync(`gh label delete "${name}" --repo ${this.repo} --yes`)
+    } catch (error: any) {
+      throw new Error(`Failed to delete label: ${error.message}`)
     }
   }
 

@@ -34,6 +34,18 @@ export interface IssueCreate {
   labels?: string[]
 }
 
+export interface Label {
+  name: string
+  color?: string
+  description?: string
+}
+
+export interface LabelUpdate {
+  name?: string
+  color?: string
+  description?: string
+}
+
 export interface IssueTracker {
   /**
    * Get fixed/resolved issues for a user
@@ -64,5 +76,30 @@ export interface IssueTracker {
    * Create a new issue
    */
   createIssue(issue: IssueCreate): Promise<Issue>
+
+  /**
+   * List all labels in the repository
+   */
+  listLabels(): Promise<Label[]>
+
+  /**
+   * Get a specific label by name
+   */
+  getLabel(name: string): Promise<Label | null>
+
+  /**
+   * Create a new label
+   */
+  createLabel(label: Label): Promise<Label>
+
+  /**
+   * Update an existing label
+   */
+  updateLabel(name: string, updates: LabelUpdate): Promise<Label>
+
+  /**
+   * Delete a label
+   */
+  deleteLabel(name: string): Promise<void>
 }
 

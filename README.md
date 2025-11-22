@@ -251,6 +251,81 @@ Options:
 
 At least one update field must be provided.
 
+#### `label`
+
+Label management commands for repository labels.
+
+##### `list`
+
+List all labels in the repository.
+
+```bash
+sdlc work label list
+```
+
+Options:
+- `--tracker`: Issue tracker to use (default: from config or `github`)
+
+##### `get`
+
+Get details about a specific label.
+
+```bash
+sdlc work label get bug
+```
+
+Options:
+- `name`: Label name (required)
+- `--tracker`: Issue tracker to use (default: from config or `github`)
+
+##### `create`
+
+Create a new label.
+
+```bash
+sdlc work label create --name "feature" --color "a2eeef"
+sdlc work label create --name "bug" --color "d73a4a" --description "Something isn't working"
+```
+
+Options:
+- `--name`: Label name (required)
+- `--color`: Label color (hex code without #)
+- `--description`: Label description
+- `--tracker`: Issue tracker to use (default: from config or `github`)
+
+##### `update`
+
+Update an existing label.
+
+```bash
+sdlc work label update bug --color "d73a4a"
+sdlc work label update feature --new-name "enhancement" --description "New feature or request"
+```
+
+Options:
+- `name`: Label name to update (required)
+- `--new-name`: New label name
+- `--color`: New label color (hex code without #)
+- `--description`: New label description
+- `--tracker`: Issue tracker to use (default: from config or `github`)
+
+At least one update field must be provided.
+
+##### `delete`
+
+Delete a label.
+
+```bash
+sdlc work label delete bug
+```
+
+Options:
+- `name`: Label name to delete (required)
+- `--tracker`: Issue tracker to use (default: from config or `github`)
+
+**Aliases:**
+- `w:label:list`, `w:label:get`, `w:label:create`, `w:label:update`, `w:label:delete`
+
 ### `config`
 
 Configuration management commands for `.sdlc.json` file.

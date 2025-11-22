@@ -39,11 +39,13 @@ export default class Validate extends Command {
     this.log('✅ PR exists for current branch')
 
     // Check if version files have been recently updated
+    // Check multiple recent commits (up to 10) to find version bump
     this.log('🔍 Checking for version bump...')
     try {
-      const {stdout} = await execAsync('git log --oneline -1 --name-only')
+      const {stdout} = await execAsync('git log --oneline -10 --name-only')
       const recentFiles = stdout.toLowerCase()
-      const versionFilesUpdated = ['version_notes.md', 'setup.py', 'pyproject.toml', 'metadata', 'package.json'].some(
+      const versionFiles = ['version_notes.md', 'setup.py', 'pyproject.toml', 'metadata', 'package.json', 'changelog.md']
+      const versionFilesUpdated = versionFiles.some(
         file => recentFiles.includes(file.toLowerCase())
       )
 

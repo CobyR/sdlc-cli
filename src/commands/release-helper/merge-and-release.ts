@@ -75,6 +75,22 @@ export default class MergeAndRelease extends Command {
       this.warn(`⚠️  Failed to verify version on main: ${error.message}`)
     }
 
+    // Build the project if it's a Node.js/TypeScript project
+    const {getConfig} = await import('../../lib/config')
+    const config = await getConfig()
+    const language = (config.language || 'nodejs') as 'python' | 'nodejs' | 'typescript'
+    
+    if (language === 'nodejs' || language === 'typescript') {
+      this.log('🔨 Building Node.js/TypeScript project...')
+      try {
+        await execAsync('npm run build')
+        this.log('✅ Build completed successfully')
+      } catch (error: any) {
+        this.warn(`⚠️  Build failed: ${error.message}`)
+        this.warn('   Please run "npm run build" manually to ensure the project is built')
+      }
+    }
+
     // Run cleanup
     this.log('🧹 Running cleanup...')
     try {

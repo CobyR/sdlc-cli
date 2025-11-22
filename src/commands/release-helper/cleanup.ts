@@ -1,6 +1,7 @@
 import {Command, Flags} from '@oclif/core'
 import {getIssueTracker, SupportedTracker} from '../../lib/issue-tracker'
 import {getVersionManager, SupportedLanguage} from '../../lib/version'
+import {getConfig} from '../../lib/config'
 
 export default class Cleanup extends Command {
   static description = 'Cleanup issues after a release'
@@ -20,13 +21,11 @@ export default class Cleanup extends Command {
       char: 't',
       description: 'Issue tracker to use',
       options: ['github'],
-      default: 'github',
     }),
     language: Flags.string({
       char: 'l',
       description: 'Programming language for version management',
       options: ['python'],
-      default: 'python',
     }),
     user: Flags.string({
       char: 'u',
@@ -37,8 +36,13 @@ export default class Cleanup extends Command {
   async run(): Promise<void> {
     const {flags} = await this.parse(Cleanup)
 
-    const issueTracker = getIssueTracker(flags.tracker as SupportedTracker)
-    const versionManager = getVersionManager(flags.language as SupportedLanguage)
+    // Load config and merge with flags (flags override config)
+    const config = await getConfig()
+    const tracker = (flags.tracker || config.tracker || 'github') as SupportedTracker
+    const language = (flags.language || config.language || 'python') as SupportedLanguage
+
+    const issueTracker = getIssueTracker(tracker, config.repo)
+    const versionManager = getVersionManager(language)
     const currentVersion = await versionManager.getCurrentVersion()
 
     this.log(`🧹 Cleaning up issues for release ${currentVersion}`)

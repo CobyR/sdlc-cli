@@ -27,6 +27,58 @@ npm install sdlc-cli
 npx sdlc release-helper validate
 ```
 
+## Configuration
+
+SDLC CLI supports project-specific configuration via a `.sdlc.json` file in your project root. This allows you to set default values for commonly used options, reducing the need to specify flags on every command.
+
+### Config File Format
+
+Create a `.sdlc.json` file in your project root:
+
+```json
+{
+  "language": "python",
+  "tracker": "github",
+  "repo": "owner/repo-name"
+}
+```
+
+**Fields:**
+- `language`: Default programming language for version management (default: `"python"`)
+- `tracker`: Default issue tracker to use (default: `"github"`)
+- `repo`: Optional GitHub repository identifier in `owner/repo-name` format (auto-detected from git if not provided)
+
+### Config Precedence
+
+Configuration values are resolved in the following order (highest to lowest priority):
+1. **CLI flags** - Explicit flags passed to commands override everything
+2. **Config file** - Values from `.sdlc.json`
+3. **Defaults** - Built-in default values
+
+### Example Usage
+
+With a config file:
+```json
+{
+  "language": "python",
+  "tracker": "github"
+}
+```
+
+Commands will use these defaults:
+```bash
+# Uses config defaults (python, github)
+sdlc release-helper bump-version --message "Release"
+
+# Overrides config language
+sdlc release-helper bump-version --language nodejs --message "Release"
+
+# Overrides config tracker
+sdlc release-helper cleanup --tracker jira
+```
+
+See `.sdlc.json.example` for a template configuration file.
+
 ## Commands
 
 ### `release-helper`
@@ -57,12 +109,12 @@ sdlc release-helper bump-version --language python --major 2 --minor 0 --patch 0
 ```
 
 Options:
-- `--language` (default: python): Programming language for version management
+- `--language`: Programming language for version management (default: from config or `python`)
 - `--major`, `--minor`, `--patch`: Version numbers
 - `--version`: Specific version to set
 - `--message`: Release message (required)
 - `--no-commit`: Skip automatic commit
-- `--tracker`: Issue tracker to use (default: github)
+- `--tracker`: Issue tracker to use (default: from config or `github`)
 
 #### `cleanup`
 
@@ -75,8 +127,8 @@ sdlc release-helper cleanup --force
 
 Options:
 - `--force`: Skip confirmation
-- `--tracker`: Issue tracker to use (default: github)
-- `--language`: Programming language (default: python)
+- `--tracker`: Issue tracker to use (default: from config or `github`)
+- `--language`: Programming language (default: from config or `python`)
 - `--user`: User to cleanup issues for
 
 #### `preview`
@@ -98,7 +150,7 @@ sdlc release-helper create-pr --title "My Release"
 
 Options:
 - `--title`: PR title (if not provided, will be generated)
-- `--tracker`: Issue tracker to use (default: github)
+- `--tracker`: Issue tracker to use (default: from config or `github`)
 - `--base`: Base branch for PR (default: main)
 
 #### `merge-and-release`
@@ -161,6 +213,7 @@ sdlc-cli/
 │   ├── commands/
 │   │   └── release-helper/    # Release helper commands
 │   ├── lib/
+│   │   ├── config/            # Configuration management
 │   │   ├── version/           # Version management
 │   │   ├── issue-tracker/     # Issue tracker abstraction
 │   │   ├── git/               # Git utilities
@@ -168,6 +221,7 @@ sdlc-cli/
 │   └── index.ts
 ├── bin/
 │   └── run.js                 # CLI entry point
+├── .sdlc.json.example         # Example config file
 └── package.json
 ```
 

@@ -2,6 +2,7 @@ import {Command, Flags} from '@oclif/core'
 import {getVersionManager, SupportedLanguage} from '../../lib/version'
 import {getIssueTracker, SupportedTracker} from '../../lib/issue-tracker'
 import {isOnMainBranch, isWorkingTreeClean} from '../../lib/git/branch'
+import {getConfig} from '../../lib/config'
 import {exec} from 'child_process'
 import {promisify} from 'util'
 
@@ -20,7 +21,6 @@ export default class BumpVersion extends Command {
       char: 'l',
       description: 'Programming language for version management',
       options: ['python'],
-      default: 'python',
     }),
     major: Flags.integer({
       char: 'M',
@@ -50,12 +50,16 @@ export default class BumpVersion extends Command {
       char: 't',
       description: 'Issue tracker to use',
       options: ['github'],
-      default: 'github',
     }),
   }
 
   async run(): Promise<void> {
     const {flags} = await this.parse(BumpVersion)
+
+    // Load config and merge with flags (flags override config)
+    const config = await getConfig()
+    const language = (flags.language || config.language || 'python') as SupportedLanguage
+    const tracker = (flags.tracker || config.tracker || 'github') as SupportedTracker
 
     // Validate we're not on main branch
     if (await isOnMainBranch()) {
@@ -69,7 +73,7 @@ export default class BumpVersion extends Command {
 
     this.log('🔢 Release Version Bump Started')
 
-    const versionManager = getVersionManager(flags.language as SupportedLanguage)
+    const versionManager = getVersionManager(language)
     const previousVersion = await versionManager.getCurrentVersion()
 
     // Calculate next version
@@ -88,7 +92,7 @@ export default class BumpVersion extends Command {
     }
 
     // Get fixed issues
-    const issueTracker = getIssueTracker(flags.tracker as SupportedTracker)
+    const issueTracker = getIssueTracker(tracker, config.repo)
     const fixedIssues = await issueTracker.getFixedIssues()
 
     // Create release notes

@@ -3,6 +3,7 @@ import {createPR, pushBranch} from '../../lib/git/pr'
 import {getIssueTracker, SupportedTracker} from '../../lib/issue-tracker'
 import {getChangesSinceMain, categorizeChanges, CategorizedChanges} from '../../lib/git/changes'
 import {isOnMainBranch} from '../../lib/git/branch'
+import {getConfig} from '../../lib/config'
 
 export default class CreatePr extends Command {
   static description = 'Create PR for current branch'
@@ -20,7 +21,6 @@ export default class CreatePr extends Command {
     tracker: Flags.string({
       description: 'Issue tracker to use',
       options: ['github'],
-      default: 'github',
     }),
     base: Flags.string({
       char: 'b',
@@ -36,11 +36,15 @@ export default class CreatePr extends Command {
       this.error('❌ Cannot create PR from main branch!')
     }
 
+    // Load config and merge with flags (flags override config)
+    const config = await getConfig()
+    const tracker = Array.isArray(flags.tracker) ? flags.tracker[0] : flags.tracker
+    const trackerValue = (tracker || config.tracker || 'github') as SupportedTracker
+
     // Get work items and git changes
     this.log('📊 Analyzing changes and work items...')
 
-    const tracker = Array.isArray(flags.tracker) ? flags.tracker[0] : flags.tracker
-    const issueTracker = getIssueTracker((tracker || 'github') as SupportedTracker)
+    const issueTracker = getIssueTracker(trackerValue, config.repo)
     const workItems = await issueTracker.getFixedIssues()
 
     const changes = await getChangesSinceMain()

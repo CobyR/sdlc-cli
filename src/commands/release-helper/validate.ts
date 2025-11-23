@@ -1,6 +1,7 @@
 import {Command, Flags} from '@oclif/core'
 import {isOnMainBranch, isWorkingTreeClean, getCurrentBranch} from '../../lib/git/branch'
 import {prExists} from '../../lib/git/pr'
+import {getAllVersionFiles} from '../../lib/version/constants'
 import {exec} from 'child_process'
 import {promisify} from 'util'
 
@@ -45,7 +46,7 @@ export default class Validate extends Command {
       // Get commits on this branch that aren't on main
       const {stdout: branchCommits} = await execAsync('git log main..HEAD --oneline --name-only')
       const recentFiles = branchCommits.toLowerCase()
-      const versionFiles = ['version_notes.md', 'setup.py', 'pyproject.toml', 'metadata', 'package.json', 'changelog.md']
+      const versionFiles = getAllVersionFiles()
       const versionFilesUpdated = versionFiles.some(
         file => recentFiles.includes(file.toLowerCase())
       )

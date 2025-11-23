@@ -2,6 +2,7 @@ import {Command} from '@oclif/core'
 import {mergePR} from '../../lib/git/pr'
 import {checkoutBranch, pullLatest} from '../../lib/git/branch'
 import {isOnMainBranch, isWorkingTreeClean} from '../../lib/git/branch'
+import {getAllVersionFiles} from '../../lib/version/constants'
 import {exec} from 'child_process'
 import {promisify} from 'util'
 
@@ -34,7 +35,7 @@ export default class MergeAndRelease extends Command {
     try {
       const {stdout: branchCommits} = await execAsync('git log main..HEAD --oneline --name-only')
       const recentFiles = branchCommits.toLowerCase()
-      const versionFiles = ['version_notes.md', 'setup.py', 'pyproject.toml', 'metadata', 'package.json', 'changelog.md']
+      const versionFiles = getAllVersionFiles()
       const versionFilesUpdated = versionFiles.some(
         file => recentFiles.includes(file.toLowerCase())
       )

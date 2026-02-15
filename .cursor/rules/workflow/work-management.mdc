@@ -1,0 +1,225 @@
+---
+alwaysApply: true
+description: Workflow rules for using SDLC CLI work management commands
+---
+
+# Work Management Workflow (SDLC CLI)
+
+When working on the `sdlc-cli` project, use the SDLC CLI's own work management commands to track and manage work items. This project provides comprehensive work item management through the `work` command group.
+
+## Primary Work Management Commands
+
+### Listing Work Items
+
+**Always use `sdlc w:list` (or `sdlc work list`) to view work items:**
+
+```bash
+# List all open issues
+sdlc w:list
+
+# List issues assigned to you
+sdlc w:list --assignee your-username
+
+# List issues with specific labels
+sdlc w:list --label "bug" --label "priority:high"
+
+# List closed issues
+sdlc w:list --state closed
+
+# Use table format for quick overview
+sdlc w:list --format table
+```
+
+**When to use:**
+- Before starting new work - check what's already in progress
+- When looking for work to pick up
+- To see the status of related issues
+- To review what's been completed
+
+### Getting Work Item Details
+
+**Use `sdlc w:get` (or `sdlc work get`) to view detailed information:**
+
+```bash
+# Get full details of a specific issue
+sdlc w:get --id 42
+```
+
+**When to use:**
+- Before starting work on an issue - read the full description
+- To understand requirements and acceptance criteria
+- To see related issues or parent epics
+- To check implementation notes on completed work
+
+### Creating Work Items
+
+**Use `sdlc w:create` (or `sdlc work create`) to create new issues:**
+
+```bash
+# Create a simple issue
+sdlc w:create --title "Feature description"
+
+# Create with full details
+sdlc w:create --title "Feature" --body "Description" --label "enhancement" --assignee username
+```
+
+**When to use:**
+- When starting work that doesn't have an associated issue
+- When breaking down larger work into smaller tasks
+- When documenting bugs or improvements discovered during development
+
+### Updating Work Items
+
+**Use `sdlc w:update` (or `sdlc work update`) to update issues:**
+
+```bash
+# Mark issue as in progress
+sdlc w:update --id 42 --label "in progress"
+
+# Update issue with implementation notes when complete
+sdlc w:update --id 42 --body "Updated description with implementation details"
+
+# Mark as fixed (but keep open until release)
+sdlc w:update --id 42 --label "fixed" --remove-label "in progress"
+
+# Close issue after release
+sdlc w:update --id 42 --state closed
+```
+
+**Workflow for completing work:**
+1. When starting work: Add "in progress" label
+2. When implementation is complete: 
+   - Add "fixed" label
+   - Remove "in progress" label
+   - Update body with implementation notes
+   - **Keep issue OPEN** until the version is released
+3. After release: Close the issue (or use `sdlc release-helper cleanup`)
+
+## Integration with Development Workflow
+
+### Before Starting Work
+
+1. **Check current work:**
+   ```bash
+   sdlc w:list --assignee your-username --state open
+   ```
+
+2. **Review the issue:**
+   ```bash
+   sdlc w:get --id <issue-number>
+   ```
+
+3. **Mark as in progress:**
+   ```bash
+   sdlc w:update --id <issue-number> --label "in progress"
+   ```
+
+### During Development
+
+- Reference the issue number in commit messages: `[#42] Description`
+- Update the issue body with progress notes if needed
+- Link related PRs or commits in issue comments
+
+### After Implementation
+
+1. **Update issue with implementation notes:**
+   ```bash
+   sdlc w:update --id <issue-number> \
+     --body "Updated with implementation details..." \
+     --label "fixed" \
+     --remove-label "in progress"
+   ```
+
+2. **Verify the update:**
+   ```bash
+   sdlc w:get --id <issue-number>
+   ```
+
+### During Release
+
+- Use `sdlc release-helper cleanup` to automatically close fixed issues
+- Or manually close issues after confirming they're in the release:
+  ```bash
+  sdlc w:update --id <issue-number> --state closed
+  ```
+
+## Label Management
+
+**Use `sdlc w:label` commands to manage labels:**
+
+```bash
+# List all labels
+sdlc w:label list
+
+# Get label details
+sdlc w:label get "bug"
+
+# Create new label
+sdlc w:label create --name "priority:high" --color "b60205"
+
+# Update label
+sdlc w:label update "bug" --color "d73a4a"
+```
+
+## Best Practices
+
+1. **Always check existing issues before creating new ones:**
+   - Use `sdlc w:list` to search for similar work
+   - Avoid duplicate issues
+
+2. **Use labels consistently:**
+   - `in progress` - Work is actively being done
+   - `fixed` - Implementation complete, waiting for release
+   - `bug`, `enhancement`, `documentation` - Issue type
+   - `priority:high`, `priority:medium`, `priority:low` - Priority
+
+3. **Keep issues open until release:**
+   - Mark as "fixed" when implementation is done
+   - Close only after the version containing the fix is released
+   - Use `sdlc release-helper cleanup` for batch closing
+
+4. **Include implementation notes:**
+   - Update issue body with what was implemented
+   - List files modified
+   - Note any breaking changes or migration steps
+   - Reference related issues or PRs
+
+5. **Use aliases for speed:**
+   - `sdlc w:list` instead of `sdlc work list`
+   - `sdlc w:get` instead of `sdlc work get`
+   - `sdlc w:create` instead of `sdlc work create`
+   - `sdlc w:update` instead of `sdlc work update`
+
+## Integration with Review and Commit Workflow
+
+When using the review-and-commit workflow:
+
+1. **Step 4 (Compare with Open Issues)** should use:
+   ```bash
+   sdlc w:list --state open
+   ```
+   Instead of or in addition to `gh issue list`
+
+2. **Step 5 (Handle Issue Association)** should:
+   - Use `sdlc w:get --id <number>` to verify issue details
+   - Use `sdlc w:update` to add "in progress" label if starting work
+   - Use `sdlc w:update` to add "fixed" label when work is complete
+
+3. **Creating new issues** should use:
+   ```bash
+   sdlc w:create --title "..." --body "..." --label "appropriate-label"
+   ```
+
+## Configuration
+
+Ensure your `.sdlc.json` is configured:
+
+```json
+{
+  "tracker": "github",
+  "repo": "CobyR/sdlc-cli",
+  "view": "table"
+}
+```
+
+This allows you to use work commands without specifying `--tracker` and `--repo` flags every time.

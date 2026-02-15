@@ -1,3 +1,13 @@
+## [1.0.3] - February 15, 2026
+
+Documentation Improvements and Go Version support added
+
+### Changes
+
+* [29](https://github.com/CobyR/sdlc-cli/issues/29) - Add Go version manager support
+* [28](https://github.com/CobyR/sdlc-cli/issues/28) - Documentation improvements
+* [26](https://github.com/CobyR/sdlc-cli/issues/26) - Centralize version file lists and constants
+
 ## [1.0.2] - November 22, 2025
 
 Minor fixes

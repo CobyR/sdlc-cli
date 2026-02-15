@@ -1,6 +1,6 @@
 {
   "name": "sdlc-cli",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Software Development Life Cycle CLI tool for release management",
   "main": "dist/index.js",
   "bin": {

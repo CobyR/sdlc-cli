@@ -45,10 +45,10 @@ If not on main branch, proceed with the following:
 
 ## Step 4: Compare with Open GitHub Issues
 
-1. Fetch the repository's GitHub issues. You may need to:
-   - Use GitHub API (if available via tools)
-   - Check if there's a `.github/ISSUES` directory or similar
-   - Use terminal commands like `gh issue list` if GitHub CLI is available
+1. Fetch the repository's GitHub issues using SDLC CLI work commands:
+   - **Primary method**: Use `sdlc w:list` (or `sdlc work list`) to list open issues
+   - **Alternative**: Use `gh issue list` if SDLC CLI is not available
+   - **Fallback**: Use GitHub API if neither CLI is available
 2. Compare the work summary from Step 3 against all open issues:
    - Look for issues that describe the same work or are addressed by the changes.
    - Match by:
@@ -72,17 +72,21 @@ If not on main branch, proceed with the following:
 - **DO NOT proceed without an issue number in the commit message.**
 
 **If no matching issues are found:**
-1. **YOU MUST create a new GitHub issue** that describes the work:
+1. **YOU MUST create a new GitHub issue** using SDLC CLI that describes the work:
+   - Use `sdlc w:create` (or `sdlc work create`) command
    - Title: Brief description of what was done
    - Body: Detailed description based on the work summary from Step 3
-   - Include relevant labels if possible (e.g., "feature", "bug", "sdlc-cli", "enhancement")
+   - Include relevant labels (e.g., "feature", "bug", "enhancement")
+   - Example: `sdlc w:create --title "Brief description" --body "Detailed description" --label "feature"`
 2. **DO NOT mark the issue as closed** - leave it open (it will be closed when released).
 3. Incorporate the new issue number into the commit message:
    - Format: `[#NEW_ISSUE_NUMBER] Brief description of changes`
    - Example: `[#45] Refactor issue tracker abstraction`
 4. **DO NOT proceed to commit without creating an issue first.**
 
-**Critical Rule**: If you cannot access GitHub issues (no API access, CLI not available, etc.), you MUST notify the user and **STOP**. Do not commit without an issue number. The user must manually create an issue or fix the GitHub access problem before proceeding.
+**Critical Rule**: If you cannot access GitHub issues (SDLC CLI not available, GitHub CLI not available, no API access, etc.), you MUST notify the user and **STOP**. Do not commit without an issue number. The user must manually create an issue or fix the GitHub access problem before proceeding.
+
+**Preferred Method**: Always use `sdlc w:list` and `sdlc w:create` commands when working on the sdlc-cli project itself, as this demonstrates the tool's capabilities and ensures consistency.
 
 ## Step 6: Run Type Check
 

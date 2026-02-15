@@ -27,7 +27,7 @@ export default class Cleanup extends Command {
     language: Flags.string({
       char: 'l',
       description: 'Programming language for version management',
-      options: ['python', 'nodejs', 'typescript'],
+      options: ['python', 'nodejs', 'typescript', 'go'],
     }),
     user: Flags.string({
       char: 'u',

@@ -281,21 +281,72 @@ export async function getCurrentVersion(rootDir: string): Promise<string> {
 
 ## Testing
 
-While the project doesn't currently have automated tests, consider:
+The project uses [Vitest](https://vitest.dev/) as the testing framework. All tests are located in `__tests__` directories alongside the source code.
 
-1. **Manual Testing:**
-   - Test commands with various inputs
-   - Test error cases
-   - Test edge cases
+### Running Tests
 
-2. **Integration Testing:**
-   - Test with real GitHub repositories
-   - Test with different project types (Node.js, Python)
+```bash
+# Run all tests
+npm test
 
-3. **Future Test Setup:**
-   - Unit tests with Jest or similar
-   - Integration tests with test repositories
-   - Mock external dependencies
+# Run tests in watch mode (for development)
+npm run test:watch
+
+# Run tests with coverage report
+npm run test:coverage
+
+# Run tests with UI
+npm run test:ui
+```
+
+### Test Structure
+
+Tests are organized to mirror the source code structure:
+- `src/lib/**/__tests__/` - Unit tests for library modules
+- `src/commands/__tests__/` - Integration tests for commands
+
+### Writing Tests
+
+1. **Create test file** in the appropriate `__tests__` directory:
+   ```typescript
+   // src/lib/version/__tests__/nodejs.test.ts
+   import {describe, it, expect} from 'vitest'
+   import {NodeVersionManager} from '../nodejs'
+   
+   describe('NodeVersionManager', () => {
+     it('should read version from package.json', async () => {
+       // Test implementation
+     })
+   })
+   ```
+
+2. **Use test helpers** from `src/__tests__/helpers/`:
+   - `test-utils.ts` - Temporary directory helpers
+   - `mocks.ts` - Mock utilities
+   - `fixtures.ts` - Test data fixtures
+
+3. **Mock external dependencies:**
+   - Git commands: Mock `child_process.exec`
+   - File operations: Use temporary directories
+   - GitHub CLI: Mock `gh` command responses
+
+### Test Coverage
+
+Coverage thresholds are set at:
+- Statements: 80%
+- Branches: 70%
+- Functions: 80%
+- Lines: 80%
+
+Run `npm run test:coverage` to see coverage reports.
+
+### CI/CD Testing
+
+Tests run automatically on:
+- Push to main and feature branches
+- Pull requests
+- Multiple Node.js versions (18, 20, 22)
+- Multiple operating systems (Ubuntu, Windows, macOS)
 
 ## Documentation
 

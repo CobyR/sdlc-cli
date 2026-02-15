@@ -1,3 +1,5 @@
+## [1.0.4] - February 15, 2026
+
 ## [1.0.3] - February 15, 2026
 
 Documentation Improvements and Go Version support added

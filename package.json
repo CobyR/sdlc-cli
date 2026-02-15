@@ -17,7 +17,10 @@
     "postpack": "rm -f oclif.manifest.json",
     "prepack": "npm run build",
     "version": "oclif manifest && git add oclif.manifest.json",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:ui": "vitest --ui"
   },
   "dependencies": {
     "@oclif/core": "^3.0.0"
@@ -25,7 +28,10 @@
   "devDependencies": {
     "@oclif/plugin-help": "^6.0.0",
     "@types/node": "^20.0.0",
-    "typescript": "^5.0.0"
+    "@vitest/coverage-v8": "^4.0.18",
+    "@vitest/ui": "^4.0.18",
+    "typescript": "^5.0.0",
+    "vitest": "^4.0.18"
   },
   "engines": {
     "node": ">=18.0.0"

@@ -9,7 +9,7 @@ SDLC CLI is built using [OCLIF (The Open CLI Framework)](https://oclif.io/) and 
 ## Features
 
 - **Release Workflow Management**: Enforces proper release workflows and prevents common mistakes
-- **Version Management**: Language-specific version bumping (Node.js/TypeScript and Python support included)
+- **Version Management**: Language-specific version bumping (Node.js/TypeScript, Python, and Go support included)
 - **Issue Tracker Integration**: Extensible framework for different issue tracking systems (GitHub Issues implemented)
 - **Git Integration**: Branch management, change analysis, and PR creation
 - **Workflow Enforcement**: Prevents commits to main branch, ensures PRs exist, validates version bumps
@@ -45,7 +45,7 @@ Create a `.sdlc.json` file in your project root:
 ```
 
 **Fields:**
-- `language`: Default programming language for version management (default: `"nodejs"`). Supported values: `nodejs`, `typescript`, `python`
+- `language`: Default programming language for version management (default: `"nodejs"`). Supported values: `nodejs`, `typescript`, `python`, `go`
 - `tracker`: Default issue tracker to use (default: `"github"`)
 - `repo`: Optional GitHub repository identifier in `owner/repo-name` format (auto-detected from git if not provided)
 - `view`: Default output format for work list command (default: `"list"`). Supported values: `list`, `table`
@@ -403,6 +403,280 @@ Options:
 
 Removes the key from the config file. If the config file becomes empty, it is deleted.
 
+## Examples
+
+### Complete Release Workflow
+
+Here's a complete example of using SDLC CLI for a typical release:
+
+```bash
+# 1. Start new work on a feature
+sdlc release-helper start-work --branch-type feature
+# Creates branch: feature/2026-02-15-description
+
+# 2. Create an issue for tracking
+sdlc work create --title "Add new authentication feature" --label "enhancement"
+
+# 3. Work on your feature, make commits...
+
+# 4. Bump version when ready to release
+sdlc release-helper bump-version --patch --message "Add authentication feature"
+
+# 5. Validate release readiness
+sdlc release-helper validate
+# Checks: branch, working tree, PR existence, version bump
+
+# 6. Create PR with auto-generated title
+sdlc release-helper create-pr
+
+# 7. After PR review, merge and release
+sdlc release-helper merge-and-release
+
+# 8. Cleanup fixed issues
+sdlc release-helper cleanup
+```
+
+### Work Item Management Examples
+
+**List and filter issues:**
+```bash
+# List all open issues
+sdlc work list
+
+# List issues assigned to you
+sdlc work list --assignee your-username
+
+# List closed issues with specific label
+sdlc work list --state closed --label "bug"
+
+# List issues in table format
+sdlc work list --format table
+
+# List issues with multiple labels
+sdlc work list --label "bug" --label "priority:high"
+```
+
+**Create and manage issues:**
+```bash
+# Create a simple issue
+sdlc work create --title "Fix login bug"
+
+# Create issue with full details
+sdlc work create \
+  --title "Implement user authentication" \
+  --body "Add OAuth2 support for user login" \
+  --assignee developer \
+  --label "feature" \
+  --label "priority:high"
+
+# Get issue details
+sdlc work get --id 42
+
+# Update issue
+sdlc work update --id 42 --state closed
+sdlc work update --id 42 --assignee new-developer
+sdlc work update --id 42 --label "in-progress" --remove-label "todo"
+
+# Batch update multiple issues
+sdlc work update --id 1,2,3 --label "ready-for-review"
+```
+
+**Label management:**
+```bash
+# List all labels
+sdlc work label list
+
+# Get label details
+sdlc work label get bug
+
+# Create a new label
+sdlc work label create \
+  --name "priority:critical" \
+  --color "b60205" \
+  --description "Critical priority issues"
+
+# Update label
+sdlc work label update bug --color "d73a4a" --description "Something isn't working"
+
+# Delete label
+sdlc work label delete old-label
+```
+
+### Version Management Examples
+
+**Node.js/TypeScript projects:**
+```bash
+# Patch version bump (1.0.0 -> 1.0.1)
+sdlc release-helper bump-version --patch --message "Bug fixes"
+
+# Minor version bump (1.0.0 -> 1.1.0)
+sdlc release-helper bump-version --minor --message "New features"
+
+# Major version bump (1.0.0 -> 2.0.0)
+sdlc release-helper bump-version --major --message "Breaking changes"
+
+# Specific version
+sdlc release-helper bump-version --version 2.5.0 --message "Major release"
+
+# Bump without committing (for review)
+sdlc release-helper bump-version --patch --message "Release" --no-commit
+```
+
+**Python projects:**
+```bash
+# Set language in config first
+sdlc config set language python
+
+# Then use same commands
+sdlc release-helper bump-version --patch --message "Bug fixes"
+```
+
+**Go projects:**
+```bash
+# Set language in config first
+sdlc config set language go
+
+# Then use same commands
+sdlc release-helper bump-version --patch --message "Bug fixes"
+```
+
+Note: Go version manager supports:
+- `VERSION` file (primary) - simple text file with version number
+- `go.mod` - version comment (e.g., `// version 1.2.3`)
+- `CHANGELOG.md` - changelog file
+
+### Configuration Examples
+
+**Setting up a new project:**
+```bash
+# Initialize configuration
+sdlc config set language nodejs
+sdlc config set tracker github
+sdlc config set repo owner/repo-name
+sdlc config set view table
+
+# View configuration
+sdlc config list
+
+# Get specific value
+sdlc config get language
+
+# Get value with source
+sdlc config get language --show-source
+
+# Remove configuration (revert to default)
+sdlc config unset repo
+```
+
+### Release Helper Examples
+
+**Validation:**
+```bash
+# Validate current state
+sdlc release-helper validate
+# Checks:
+# - Not on main branch ✓
+# - Working tree is clean ✓
+# - PR exists ✓
+# - Version bump detected ✓
+```
+
+**Preview release:**
+```bash
+# See what issues will be included in release
+sdlc release-helper preview
+```
+
+**Create PR:**
+```bash
+# Auto-generate PR title from work items
+sdlc release-helper create-pr
+
+# Use custom title
+sdlc release-helper create-pr --title "Release v2.0.0"
+
+# Create PR against different base branch
+sdlc release-helper create-pr --base develop
+```
+
+**Cleanup after release:**
+```bash
+# Interactive cleanup (asks for confirmation)
+sdlc release-helper cleanup
+
+# Force cleanup (no confirmation)
+sdlc release-helper cleanup --force
+
+# Cleanup for specific user
+sdlc release-helper cleanup --user developer
+```
+
+### CI/CD Integration Examples
+
+**GitHub Actions:**
+```yaml
+name: Release Validation
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - run: npm install -g sdlc-cli
+      - run: sdlc release-helper validate
+```
+
+**GitLab CI:**
+```yaml
+validate-release:
+  image: node:18
+  script:
+    - npm install -g sdlc-cli
+    - sdlc release-helper validate
+  only:
+    - merge_requests
+```
+
+### Advanced Usage Examples
+
+**Using aliases:**
+```bash
+# Short aliases for common commands
+sdlc w list          # work list
+sdlc w:get --id 42   # work get --id 42
+sdlc rh validate     # release-helper validate
+sdlc c list           # config list
+```
+
+**Combining commands:**
+```bash
+# Create issue and start work in one workflow
+ISSUE_ID=$(sdlc work create --title "New feature" | grep -o '#[0-9]*' | cut -c2-)
+sdlc release-helper start-work
+sdlc work update --id $ISSUE_ID --label "in-progress"
+```
+
+**Script automation:**
+```bash
+#!/bin/bash
+# Automated release script
+
+# Validate
+sdlc release-helper validate || exit 1
+
+# Bump version
+sdlc release-helper bump-version --patch --message "Automated release"
+
+# Create PR
+sdlc release-helper create-pr --title "Release $(date +%Y-%m-%d)"
+```
+
 ## Architecture
 
 ### Version Management
@@ -411,7 +685,8 @@ Extensible framework for language-specific version management:
 - `VersionManager` interface defines the contract
 - `NodeVersionManager` implements Node.js/TypeScript project versioning (package.json, CHANGELOG.md)
 - `PythonVersionManager` implements Python project versioning (pyproject.toml, setup.py, version_notes.md)
-- Easy to add support for other languages (Go, Rust, etc.)
+- `GoVersionManager` implements Go project versioning (VERSION, go.mod, CHANGELOG.md)
+- Easy to add support for other languages (Rust, etc.)
 
 ### Issue Tracker Integration
 
@@ -463,6 +738,14 @@ sdlc-cli/
 - Node.js >= 18.0.0
 - Git
 - GitHub CLI (`gh`) for GitHub Issues integration
+
+## Documentation
+
+- [Troubleshooting Guide](docs/TROUBLESHOOTING.md) - Common issues and solutions
+- [Migration Guide](docs/MIGRATION.md) - Migrating from Python version
+- [Architecture Documentation](docs/ARCHITECTURE.md) - Technical architecture and design
+- [Contributing Guide](docs/CONTRIBUTING.md) - How to contribute to the project
+- [API Documentation](docs/API.md) - Using SDLC CLI as a library
 
 ## License
 

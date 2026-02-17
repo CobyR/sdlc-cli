@@ -1,6 +1,14 @@
 import {Command, Flags} from '@oclif/core'
 import {isOnMainBranch, isWorkingTreeClean, getCurrentBranch} from '../../lib/git/branch'
 import {prExists} from '../../lib/git/pr'
+import {ALL_VERSION_FILES} from '../../lib/version/constants'
+import {
+  createGitWorkflowError,
+  formatErrorWithSuggestions,
+  handleCommandError,
+  wrapError,
+} from '../../lib/errors'
+import {ErrorCode} from '../../lib/errors/types'
 import {exec} from 'child_process'
 import {promisify} from 'util'
 
@@ -20,7 +28,21 @@ export default class Validate extends Command {
 
     // Check branch
     if (await isOnMainBranch()) {
-      this.error('❌ WORKFLOW VIOLATION: Cannot start release from main branch!\n   Create a feature branch first: git checkout -b feature/description')
+      const error = createGitWorkflowError(
+        'Cannot start release from main branch',
+        {
+          suggestion: 'Create a feature branch first',
+          command: 'git checkout -b feature/description',
+        }
+      )
+      this.error(formatErrorWithSuggestions(
+        'WORKFLOW VIOLATION',
+        error.message,
+        [
+          'Create a feature branch first',
+          'Run: git checkout -b feature/description',
+        ]
+      ))
     }
 
     const branch = await getCurrentBranch()
@@ -28,13 +50,43 @@ export default class Validate extends Command {
 
     // Check working tree
     if (!(await isWorkingTreeClean())) {
-      this.error('❌ WORKFLOW VIOLATION: Working tree not clean!\n   Commit all changes before starting release')
+      const error = createGitWorkflowError(
+        'Working tree not clean',
+        {
+          suggestion: 'Commit all changes before starting release',
+          command: 'git add . && git commit -m "Your message"',
+        }
+      )
+      this.error(formatErrorWithSuggestions(
+        'WORKFLOW VIOLATION',
+        error.message,
+        [
+          'Commit all changes before starting release',
+          'Run: git add . && git commit -m "Your message"',
+        ]
+      ))
     }
     this.log('✅ Working tree is clean')
 
     // Check PR exists
     if (!(await prExists())) {
-      this.error('❌ RELEASE BLOCKED: Missing Pull Request\n   Next steps:\n   1. Push branch: git push origin <branch>\n   2. Create PR: gh pr create --title "[Release] Description"\n   3. Run this validation again')
+      const branch = await getCurrentBranch()
+      const error = createGitWorkflowError(
+        'Missing Pull Request',
+        {
+          suggestion: 'Create a PR for your branch',
+          command: `gh pr create --title "[Release] Description"`,
+        }
+      )
+      this.error(formatErrorWithSuggestions(
+        'RELEASE BLOCKED',
+        error.message,
+        [
+          `Push branch: git push origin ${branch}`,
+          'Create PR: gh pr create --title "[Release] Description"',
+          'Run this validation again',
+        ]
+      ))
     }
     this.log('✅ PR exists for current branch')
 
@@ -45,18 +97,39 @@ export default class Validate extends Command {
       // Get commits on this branch that aren't on main
       const {stdout: branchCommits} = await execAsync('git log main..HEAD --oneline --name-only')
       const recentFiles = branchCommits.toLowerCase()
-      const versionFiles = ['version_notes.md', 'setup.py', 'pyproject.toml', 'metadata', 'package.json', 'changelog.md']
-      const versionFilesUpdated = versionFiles.some(
+      const versionFilesUpdated = ALL_VERSION_FILES.some(
         file => recentFiles.includes(file.toLowerCase())
       )
 
       if (!versionFilesUpdated) {
-        this.error('❌ RELEASE BLOCKED: Version not bumped!\n   Expected workflow:\n   1. Run: sdlc release-helper bump-version --message "Your release message"\n   2. Commit the version changes\n   3. Create PR with version bump included\n   4. Then run merge-and-release')
+        const error = createGitWorkflowError(
+          'Version not bumped',
+          {
+            suggestion: 'Bump version before releasing',
+            command: 'sdlc release-helper bump-version --message "Your release message"',
+          }
+        )
+        this.error(formatErrorWithSuggestions(
+          'RELEASE BLOCKED',
+          error.message,
+          [
+            'Run: sdlc release-helper bump-version --message "Your release message"',
+            'Commit the version changes',
+            'Create PR with version bump included',
+            'Then run merge-and-release',
+          ]
+        ))
       }
 
       this.log('✅ Version bump detected in PR commits')
     } catch (error: any) {
-      this.error(`❌ Failed to check recent commits: ${error.message}`)
+      const wrappedError = wrapError(
+        error,
+        ErrorCode.GIT_COMMAND_ERROR,
+        'Failed to check recent commits',
+        {command: 'git log main..HEAD --oneline --name-only'}
+      )
+      handleCommandError(this, wrappedError)
     }
 
     this.log('\n✅ ALL CHECKS PASSED - Ready for release!')

@@ -138,6 +138,9 @@ describe('ConfigUnset Command', () => {
         language: 'python',
       })
       vi.mocked(configLib.updateConfigValue).mockRejectedValue(new Error('Failed to write config'))
+      
+      // Don't throw on error for this test - just track the call
+      errorSpy.mockImplementation(() => {})
 
       await command.run()
 

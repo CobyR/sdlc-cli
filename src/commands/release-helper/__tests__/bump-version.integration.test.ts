@@ -64,21 +64,22 @@ describe('BumpVersion Command - Integration Tests', () => {
       vi.mocked(trackerLib.getIssueTracker).mockReturnValue(mockTracker as any)
 
       // Mock git commands
-      vi.mocked(exec).mockImplementation((cmd: string, options: any, callback?: any) => {
-        const cb = callback || options
-        if (cmd.includes('git add')) {
-          cb(null, '', '')
-        } else if (cmd.includes('git commit')) {
-          cb(null, '', '')
-        } else if (cmd.includes('git branch --show-current')) {
-          cb(null, 'feature/release\n', '')
-        } else if (cmd.includes('git push')) {
-          cb(null, '', '')
-        } else {
-          cb(null, '', '')
-        }
-        return {} as any
-      })
+      // Match the pattern used in other tests: callback(null, {stdout, stderr})
+      vi.mocked(exec).mockImplementation(
+        ((command: string, callback: any) => {
+          if (command.includes('git add')) {
+            callback(null, {stdout: '', stderr: ''})
+          } else if (command.includes('git commit')) {
+            callback(null, {stdout: '', stderr: ''})
+          } else if (command.includes('git branch --show-current')) {
+            callback(null, {stdout: 'feature/release\n', stderr: ''})
+          } else if (command.includes('git push')) {
+            callback(null, {stdout: '', stderr: ''})
+          } else {
+            callback(null, {stdout: '', stderr: ''})
+          }
+        }) as any
+      )
 
       // Mock parse to return flags
       const parseSpy = vi.spyOn(command as any, 'parse').mockResolvedValue({

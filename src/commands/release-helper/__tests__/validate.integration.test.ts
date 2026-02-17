@@ -4,9 +4,6 @@ import Validate from '../validate'
 import * as branchLib from '../../../lib/git/branch'
 import * as prLib from '../../../lib/git/pr'
 import {exec} from 'child_process'
-import {promisify} from 'util'
-
-const execAsync = promisify(exec)
 
 // Mock dependencies
 vi.mock('../../../lib/git/branch')
@@ -40,15 +37,16 @@ describe('Validate Command - Integration Tests', () => {
       vi.mocked(prLib.prExists).mockResolvedValue(true)
       
       // Mock: git log shows version files updated
-      vi.mocked(exec).mockImplementation((cmd: string, options: any, callback?: any) => {
-        const cb = callback || options
-        if (cmd.includes('git log main..HEAD')) {
-          cb(null, 'commit abc123\npackage.json\nCHANGELOG.md', '')
-        } else {
-          cb(null, '', '')
-        }
-        return {} as any
-      })
+      // Match the pattern used in other tests: callback(null, {stdout, stderr})
+      vi.mocked(exec).mockImplementation(
+        ((command: string, callback: any) => {
+          if (command.includes('git log main..HEAD')) {
+            callback(null, {stdout: 'commit abc123\npackage.json\nCHANGELOG.md', stderr: ''})
+          } else {
+            callback(null, {stdout: '', stderr: ''})
+          }
+        }) as any
+      )
 
       const logSpy = vi.spyOn(command, 'log')
       const errorSpy = vi.spyOn(command, 'error')
@@ -111,15 +109,16 @@ describe('Validate Command - Integration Tests', () => {
       vi.mocked(prLib.prExists).mockResolvedValue(true)
       
       // Mock: git log shows no version files
-      vi.mocked(exec).mockImplementation((cmd: string, options: any, callback?: any) => {
-        const cb = callback || options
-        if (cmd.includes('git log main..HEAD')) {
-          cb(null, 'commit abc123\nREADME.md\nsrc/index.ts', '')
-        } else {
-          cb(null, '', '')
-        }
-        return {} as any
-      })
+      // Match the pattern used in other tests: callback(null, {stdout, stderr})
+      vi.mocked(exec).mockImplementation(
+        ((command: string, callback: any) => {
+          if (command.includes('git log main..HEAD')) {
+            callback(null, {stdout: 'commit abc123\nREADME.md\nsrc/index.ts', stderr: ''})
+          } else {
+            callback(null, {stdout: '', stderr: ''})
+          }
+        }) as any
+      )
 
       const errorSpy = vi.spyOn(command, 'error').mockImplementation(() => {
         throw new Error('Command error')
@@ -137,15 +136,16 @@ describe('Validate Command - Integration Tests', () => {
       vi.mocked(prLib.prExists).mockResolvedValue(true)
       
       // Mock: git log fails
-      vi.mocked(exec).mockImplementation((cmd: string, options: any, callback?: any) => {
-        const cb = callback || options
-        if (cmd.includes('git log main..HEAD')) {
-          cb(new Error('Git command failed'), '', '')
-        } else {
-          cb(null, '', '')
-        }
-        return {} as any
-      })
+      // Match the pattern used in other tests: callback(error, {stdout, stderr})
+      vi.mocked(exec).mockImplementation(
+        ((command: string, callback: any) => {
+          if (command.includes('git log main..HEAD')) {
+            callback(new Error('Git command failed'), {stdout: '', stderr: ''})
+          } else {
+            callback(null, {stdout: '', stderr: ''})
+          }
+        }) as any
+      )
 
       const errorSpy = vi.spyOn(command, 'error').mockImplementation(() => {
         throw new Error('Command error')

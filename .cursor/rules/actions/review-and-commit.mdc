@@ -65,6 +65,9 @@ If not on main branch, proceed with the following:
 
 **If matching issues are found:**
 - Select the most relevant issue (or issues if multiple apply).
+- **Before committing, update the issue(s) to reflect work status:**
+  - If this is the start of work on the issue: `sdlc w:update --id <number> --assignee CobyR --label "In Progress"`
+  - If this completes the work: `sdlc w:update --id <number> --label "Fixed" --remove-label "In Progress"`
 - Create a commit message that incorporates the issue number(s):
   - Format: `[#ISSUE_NUMBER] Brief description of changes`
   - Example: `[#42] Add Python version manager implementation`
@@ -76,13 +79,16 @@ If not on main branch, proceed with the following:
    - Use `sdlc w:create` (or `sdlc work create`) command
    - Title: Brief description of what was done
    - Body: Detailed description based on the work summary from Step 3
-   - Include relevant labels (e.g., "feature", "bug", "enhancement")
-   - Example: `sdlc w:create --title "Brief description" --body "Detailed description" --label "feature"`
-2. **DO NOT mark the issue as closed** - leave it open (it will be closed when released).
-3. Incorporate the new issue number into the commit message:
+   - Assign to yourself: `--assignee CobyR`
+   - Include relevant labels (e.g., "feature", "bug", "enhancement", "In Progress")
+   - Example: `sdlc w:create --title "Brief description" --body "Detailed description" --assignee CobyR --label "feature" --label "In Progress"`
+2. **If the work is already complete when creating the issue:**
+   - Mark as fixed: `sdlc w:update --id <new-issue-number> --label "Fixed" --remove-label "In Progress"`
+3. **DO NOT mark the issue as closed** - leave it open (it will be closed when released).
+4. Incorporate the new issue number into the commit message:
    - Format: `[#NEW_ISSUE_NUMBER] Brief description of changes`
    - Example: `[#45] Refactor issue tracker abstraction`
-4. **DO NOT proceed to commit without creating an issue first.**
+5. **DO NOT proceed to commit without creating an issue first.**
 
 **Critical Rule**: If you cannot access GitHub issues (SDLC CLI not available, GitHub CLI not available, no API access, etc.), you MUST notify the user and **STOP**. Do not commit without an issue number. The user must manually create an issue or fix the GitHub access problem before proceeding.
 

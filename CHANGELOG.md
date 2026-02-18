@@ -1,8 +1,10 @@
-## [1.0.4] - February 17, 2026
+## [1.0.4] - February 18, 2026
 
 ### Changes
 
+* [65](https://github.com/CobyR/sdlc-cli/issues/65) - Enhance release-helper validate with CHANGELOG sync
 * [63](https://github.com/CobyR/sdlc-cli/issues/63) - Clarify unstaged/uncommitted changes in review-and-commit workflow
+* [55](https://github.com/CobyR/sdlc-cli/issues/55) - Add release-helper changelog command
 * [39](https://github.com/CobyR/sdlc-cli/issues/39) - Standardize error handling patterns
 * [38](https://github.com/CobyR/sdlc-cli/issues/38) - Centralize version file constants
 * [37](https://github.com/CobyR/sdlc-cli/issues/37) - Add integration tests for release workflows

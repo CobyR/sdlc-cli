@@ -1,4 +1,6 @@
-import {Command, Flags} from '@oclif/core'
+import {Command} from '@oclif/core'
+import {readFile} from 'fs/promises'
+import {join} from 'path'
 import {isOnMainBranch, isWorkingTreeClean, getCurrentBranch} from '../../lib/git/branch'
 import {prExists} from '../../lib/git/pr'
 import {ALL_VERSION_FILES} from '../../lib/version/constants'
@@ -9,6 +11,15 @@ import {
   wrapError,
 } from '../../lib/errors'
 import {ErrorCode} from '../../lib/errors/types'
+import {getConfig} from '../../lib/config'
+import {getVersionManager, SupportedLanguage} from '../../lib/version'
+import {getIssueTracker, SupportedTracker} from '../../lib/issue-tracker'
+import {
+  CHANGELOG_FILENAME,
+  extractVersionBlock,
+  countChangesInVersionBlock,
+  updateChangelogForVersion,
+} from '../../lib/changelog'
 import {exec} from 'child_process'
 import {promisify} from 'util'
 
@@ -122,6 +133,48 @@ export default class Validate extends Command {
       }
 
       this.log('✅ Version bump detected in PR commits')
+
+      // CHANGELOG sync: compare changes count with fixed issues, update and push if different
+      const config = await getConfig()
+      const language = (config.language || 'nodejs') as SupportedLanguage
+      const tracker = (config.tracker || 'github') as SupportedTracker
+      const versionManager = getVersionManager(language)
+      const version = await versionManager.getCurrentVersion()
+      const issueTracker = getIssueTracker(tracker, config.repo)
+      const fixedIssues = await issueTracker.getFixedIssues()
+      const fixedCount = fixedIssues.length
+
+      let changelogCount = 0
+      try {
+        const changelogPath = join(process.cwd(), CHANGELOG_FILENAME)
+        const changelogContent = await readFile(changelogPath, 'utf-8')
+        const versionBlock = extractVersionBlock(changelogContent, version)
+        if (versionBlock !== null) {
+          changelogCount = countChangesInVersionBlock(versionBlock)
+        }
+      } catch (err: unknown) {
+        const e = err as NodeJS.ErrnoException
+        if (e.code !== 'ENOENT') {
+          this.warn(`Could not read CHANGELOG.md: ${e.message}`)
+        }
+      }
+
+      if (changelogCount !== fixedCount) {
+        this.log('📝 CHANGELOG out of sync with fixed issues, updating...')
+        await updateChangelogForVersion(process.cwd(), version, fixedIssues)
+        try {
+          await execAsync('git add CHANGELOG.md')
+          await execAsync(`git commit -m "chore: Update CHANGELOG.md for version ${version}"`)
+          this.log('✅ CHANGELOG.md committed')
+          await execAsync('git push origin HEAD')
+          this.log('✅ CHANGELOG.md pushed to origin')
+        } catch (gitError: unknown) {
+          const msg = gitError instanceof Error ? gitError.message : String(gitError)
+          this.warn(`CHANGELOG updated locally but git commit/push failed: ${msg}`)
+        }
+      } else {
+        this.log('✅ CHANGELOG in sync with fixed issues')
+      }
     } catch (error: any) {
       const wrappedError = wrapError(
         error,

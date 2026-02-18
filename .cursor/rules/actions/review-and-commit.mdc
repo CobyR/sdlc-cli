@@ -17,21 +17,24 @@ When this action is invoked, follow these steps sequentially. This workflow is f
    - Maintenance branches: `maintenance/description` or `fix/description` or `bugfix/description`
    - If the branch doesn't follow conventions, warn the user but allow them to proceed.
 
-## Step 2: Check for Unstaged Files
+## Step 2: Check for Unstaged / Uncommitted Changes
 
 If not on main branch, proceed with the following:
 
-1. Run `git status` to check for unstaged or modified files.
-2. If there are no unstaged files:
-   - Notify the user: "No unstaged changes found. Nothing to commit."
+1. Run `git status` to check for changes to commit. This includes:
+   - **Untracked files** (new files not yet added)
+   - **Unstaged changes** (modified or deleted tracked files not yet added to the index)
+   - Optionally **staged changes** (already `git add`ed but not committed)
+2. If there is nothing to commit (no untracked files, no unstaged changes, and no staged changes):
+   - Notify the user: "No unstaged or uncommitted changes found. Nothing to commit."
    - **STOP**
-3. If there are unstaged files:
-   - List all unstaged files for the user.
+3. If there are untracked files and/or unstaged changes:
+   - List all such files for the user (e.g. from `git status` under "Changes not staged" and "Untracked files").
    - Proceed to Step 3.
 
 ## Step 3: Examine the Work Done
 
-1. For each unstaged file, read its contents or review the diff:
+1. For each file with changes (unstaged or untracked), read its contents or review the diff:
    - Use `git diff` to see what has changed.
    - Read modified files to understand the changes made.
    - Summarize the work that has been completed:
@@ -65,6 +68,9 @@ If not on main branch, proceed with the following:
 
 **If matching issues are found:**
 - Select the most relevant issue (or issues if multiple apply).
+- **Before committing, update the issue(s) to reflect work status:**
+  - If this is the start of work on the issue: `sdlc w:update --id <number> --assignee CobyR --label "In Progress"`
+  - If this completes the work: `sdlc w:update --id <number> --label "Fixed" --remove-label "In Progress"`
 - Create a commit message that incorporates the issue number(s):
   - Format: `[#ISSUE_NUMBER] Brief description of changes`
   - Example: `[#42] Add Python version manager implementation`
@@ -76,13 +82,16 @@ If not on main branch, proceed with the following:
    - Use `sdlc w:create` (or `sdlc work create`) command
    - Title: Brief description of what was done
    - Body: Detailed description based on the work summary from Step 3
-   - Include relevant labels (e.g., "feature", "bug", "enhancement")
-   - Example: `sdlc w:create --title "Brief description" --body "Detailed description" --label "feature"`
-2. **DO NOT mark the issue as closed** - leave it open (it will be closed when released).
-3. Incorporate the new issue number into the commit message:
+   - Assign to yourself: `--assignee CobyR`
+   - Include relevant labels (e.g., "feature", "bug", "enhancement", "In Progress")
+   - Example: `sdlc w:create --title "Brief description" --body "Detailed description" --assignee CobyR --label "feature" --label "In Progress"`
+2. **If the work is already complete when creating the issue:**
+   - Mark as fixed: `sdlc w:update --id <new-issue-number> --label "Fixed" --remove-label "In Progress"`
+3. **DO NOT mark the issue as closed** - leave it open (it will be closed when released).
+4. Incorporate the new issue number into the commit message:
    - Format: `[#NEW_ISSUE_NUMBER] Brief description of changes`
    - Example: `[#45] Refactor issue tracker abstraction`
-4. **DO NOT proceed to commit without creating an issue first.**
+5. **DO NOT proceed to commit without creating an issue first.**
 
 **Critical Rule**: If you cannot access GitHub issues (SDLC CLI not available, GitHub CLI not available, no API access, etc.), you MUST notify the user and **STOP**. Do not commit without an issue number. The user must manually create an issue or fix the GitHub access problem before proceeding.
 
@@ -107,7 +116,7 @@ If not on main branch, proceed with the following:
 
 ## Step 7: Stage and Commit Changes
 
-1. Stage all unstaged files: `git add .` or `git add -A`
+1. Stage all untracked and unstaged files: `git add .` or `git add -A`
 2. Create the commit with the message from Step 5:
    ```bash
    git commit -m "YOUR_COMMIT_MESSAGE_HERE"

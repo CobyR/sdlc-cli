@@ -4,11 +4,15 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
-    include: ['src/**/*.{test,spec}.{js,ts}'],
+    include: [
+      'src/**/*.{test,spec}.{js,ts}',
+      'src/commands/**/*.{test,spec}.{js,ts}',
+    ],
     exclude: ['node_modules', 'dist', '.git'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
+      include: ['src/**/*.ts'],
       exclude: [
         'node_modules/',
         'dist/',

@@ -1,4 +1,11 @@
-## [1.0.4] - February 15, 2026
+## [1.0.4] - February 17, 2026
+
+### Changes
+
+* [63](https://github.com/CobyR/sdlc-cli/issues/63) - Clarify unstaged/uncommitted changes in review-and-commit workflow
+* [39](https://github.com/CobyR/sdlc-cli/issues/39) - Standardize error handling patterns
+* [38](https://github.com/CobyR/sdlc-cli/issues/38) - Centralize version file constants
+* [37](https://github.com/CobyR/sdlc-cli/issues/37) - Add integration tests for release workflows
 
 ## [1.0.3] - February 15, 2026
 

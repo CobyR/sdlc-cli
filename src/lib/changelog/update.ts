@@ -5,6 +5,18 @@ import type {Issue} from '../issue-tracker/types'
 export const CHANGELOG_FILENAME = 'CHANGELOG.md'
 
 /**
+ * Parse the release date for a version from changelog content.
+ * Expects Keep a Changelog format: ## [version] - YYYY-MM-DD or ## [version] - Month DD, YYYY
+ * Returns the date string (e.g. "February 19, 2026") or null if not found.
+ */
+export function getReleaseDateForVersion(changelogContent: string, version: string): string | null {
+  const escaped = version.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const re = new RegExp(`^## \\[${escaped}\\]\\s*-\\s*(.+?)(?:\\n|$)`, 'm')
+  const match = changelogContent.match(re)
+  return match ? match[1].trim() : null
+}
+
+/**
  * Find the current version block (## [version] - ...) and return the content after it.
  * Block ends at the next line matching ## [ or # Changelog.
  * If the version block is not found, returns null.

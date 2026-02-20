@@ -1,7 +1,7 @@
 import {Command} from '@oclif/core'
 import {readFile} from 'fs/promises'
 import {join} from 'path'
-import {isOnMainBranch, isWorkingTreeClean, getCurrentBranch} from '../../lib/git/branch'
+import {isInsideGitRepository, isOnMainBranch, isWorkingTreeClean, getCurrentBranch} from '../../lib/git/branch'
 import {prExists} from '../../lib/git/pr'
 import {ALL_VERSION_FILES} from '../../lib/version/constants'
 import {
@@ -36,6 +36,10 @@ export default class Validate extends Command {
 
   async run(): Promise<void> {
     this.log('🔍 Validating release readiness...')
+
+    if (!(await isInsideGitRepository())) {
+      this.error('The current directory is not part of a git repository.')
+    }
 
     // Check branch
     if (await isOnMainBranch()) {

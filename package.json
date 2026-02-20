@@ -39,6 +39,9 @@
   "oclif": {
     "bin": "sdlc",
     "commands": "./dist/commands",
+    "hooks": {
+      "init": "./dist/hooks/init/version-with-date"
+    },
     "topics": {
       "config": {
         "description": "Configuration management commands",

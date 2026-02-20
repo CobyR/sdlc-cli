@@ -3,6 +3,8 @@ import {Command} from '@oclif/core'
 export default class Config extends Command {
   static description = 'Configuration management commands'
 
+  static aliases = ['c']
+
   static examples = [
     '<%= config.bin %> <%= command.id %> list',
     '<%= config.bin %> <%= command.id %> get language',

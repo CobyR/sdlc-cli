@@ -3,6 +3,8 @@ import {Command} from '@oclif/core'
 export default class Work extends Command {
   static description = 'Work item and issue management commands'
 
+  static aliases = ['w']
+
   static examples = [
     '<%= config.bin %> <%= command.id %> list',
     '<%= config.bin %> <%= command.id %> get --id 42',

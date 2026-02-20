@@ -1,9 +1,5 @@
 ## [1.0.4] - February 19, 2026
 
-### Changes
-
-* [68](https://github.com/CobyR/sdlc-cli/issues/68) - [MAINTENANCE] Fix SDLC so aliases like rh work with --help
-
 ## [1.0.3] - February 15, 2026
 
 Documentation Improvements and Go Version support added

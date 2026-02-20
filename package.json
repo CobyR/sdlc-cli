@@ -60,6 +60,12 @@
         "aliases": [
           "rh"
         ]
+      },
+      "repo": {
+        "description": "Repository and Git setup commands",
+        "aliases": [
+          "r"
+        ]
       }
     }
   },

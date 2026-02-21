@@ -3,13 +3,18 @@ import {promisify} from 'util'
 
 const execAsync = promisify(exec)
 
-export async function prExists(): Promise<boolean> {
+export async function getPrUrl(): Promise<string | null> {
   try {
-    await execAsync('gh pr view --json url')
-    return true
+    const {stdout} = await execAsync('gh pr view --json url')
+    const data = JSON.parse(stdout) as {url?: string}
+    return data.url ?? null
   } catch {
-    return false
+    return null
   }
+}
+
+export async function prExists(): Promise<boolean> {
+  return (await getPrUrl()) !== null
 }
 
 export async function createPR(title: string, body: string, base: string = 'main'): Promise<string> {

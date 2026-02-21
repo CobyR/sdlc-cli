@@ -1,5 +1,5 @@
 import {describe, it, expect, beforeEach, vi} from 'vitest'
-import {prExists, createPR} from '../pr'
+import {getPrUrl, prExists, createPR} from '../pr'
 import {exec} from 'child_process'
 import {writeFile, unlink} from 'fs/promises'
 import {tmpdir} from 'os'
@@ -36,6 +36,44 @@ describe('Git PR Utilities', () => {
     vi.clearAllMocks()
     vi.mocked(writeFile).mockResolvedValue(undefined)
     vi.mocked(unlink).mockResolvedValue(undefined)
+  })
+
+  describe('getPrUrl', () => {
+    it('should return PR URL when PR exists', async () => {
+      vi.mocked(exec).mockImplementation(
+        ((command: string, callback: any) => {
+          callback(null, {stdout: '{"url":"https://github.com/test/repo/pull/1"}', stderr: ''})
+        }) as any
+      )
+
+      const url = await getPrUrl()
+
+      expect(url).toBe('https://github.com/test/repo/pull/1')
+    })
+
+    it('should return null when PR does not exist', async () => {
+      vi.mocked(exec).mockImplementation(
+        ((command: string, callback: any) => {
+          callback(new Error('no pull request found'), {stdout: '', stderr: 'no pull request found'})
+        }) as any
+      )
+
+      const url = await getPrUrl()
+
+      expect(url).toBe(null)
+    })
+
+    it('should return null when url field is missing', async () => {
+      vi.mocked(exec).mockImplementation(
+        ((command: string, callback: any) => {
+          callback(null, {stdout: '{}', stderr: ''})
+        }) as any
+      )
+
+      const url = await getPrUrl()
+
+      expect(url).toBe(null)
+    })
   })
 
   describe('prExists', () => {

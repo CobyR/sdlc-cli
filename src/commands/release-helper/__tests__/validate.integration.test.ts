@@ -45,7 +45,7 @@ describe('Validate Command - Integration Tests', () => {
       vi.mocked(branchLib.isOnMainBranch).mockResolvedValue(false)
       vi.mocked(branchLib.getCurrentBranch).mockResolvedValue('feature/release-1.0.0')
       vi.mocked(branchLib.isWorkingTreeClean).mockResolvedValue(true)
-      vi.mocked(prLib.prExists).mockResolvedValue(true)
+      vi.mocked(prLib.getPrUrl).mockResolvedValue('https://github.com/owner/repo/pull/42')
       
       // Mock: git log shows version files updated
       // Match the pattern used in other tests: callback(null, {stdout, stderr})
@@ -67,7 +67,7 @@ describe('Validate Command - Integration Tests', () => {
       expect(logSpy).toHaveBeenCalledWith('🔍 Validating release readiness...')
       expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('Current branch:'))
       expect(logSpy).toHaveBeenCalledWith('✅ Working tree is clean')
-      expect(logSpy).toHaveBeenCalledWith('✅ PR exists for current branch')
+      expect(logSpy).toHaveBeenCalledWith('✅ PR exists for current branch: https://github.com/owner/repo/pull/42')
       expect(logSpy).toHaveBeenCalledWith('✅ Version bump detected in PR commits')
       expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('ALL CHECKS PASSED'))
       expect(errorSpy).not.toHaveBeenCalled()
@@ -105,7 +105,7 @@ describe('Validate Command - Integration Tests', () => {
       vi.mocked(branchLib.isOnMainBranch).mockResolvedValue(false)
       vi.mocked(branchLib.getCurrentBranch).mockResolvedValue('feature/release')
       vi.mocked(branchLib.isWorkingTreeClean).mockResolvedValue(true)
-      vi.mocked(prLib.prExists).mockResolvedValue(false)
+      vi.mocked(prLib.getPrUrl).mockResolvedValue(null)
       
       const errorSpy = vi.spyOn(command, 'error').mockImplementation(() => {
         throw new Error('Command error')
@@ -121,7 +121,7 @@ describe('Validate Command - Integration Tests', () => {
       vi.mocked(branchLib.isOnMainBranch).mockResolvedValue(false)
       vi.mocked(branchLib.getCurrentBranch).mockResolvedValue('feature/release')
       vi.mocked(branchLib.isWorkingTreeClean).mockResolvedValue(true)
-      vi.mocked(prLib.prExists).mockResolvedValue(true)
+      vi.mocked(prLib.getPrUrl).mockResolvedValue('https://github.com/owner/repo/pull/1')
       
       // Mock: git log shows no version files
       // Match the pattern used in other tests: callback(null, {stdout, stderr})
@@ -149,7 +149,7 @@ describe('Validate Command - Integration Tests', () => {
       vi.mocked(branchLib.isOnMainBranch).mockResolvedValue(false)
       vi.mocked(branchLib.getCurrentBranch).mockResolvedValue('feature/release')
       vi.mocked(branchLib.isWorkingTreeClean).mockResolvedValue(true)
-      vi.mocked(prLib.prExists).mockResolvedValue(true)
+      vi.mocked(prLib.getPrUrl).mockResolvedValue('https://github.com/owner/repo/pull/1')
       
       // Mock: git log fails
       // Match the pattern used in other tests: callback(error, {stdout, stderr})

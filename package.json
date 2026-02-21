@@ -39,6 +39,9 @@
   "oclif": {
     "bin": "sdlc",
     "commands": "./dist/commands",
+    "hooks": {
+      "init": "./dist/hooks/init/version-with-date"
+    },
     "topics": {
       "config": {
         "description": "Configuration management commands",
@@ -56,6 +59,12 @@
         "description": "Release workflow management commands",
         "aliases": [
           "rh"
+        ]
+      },
+      "repo": {
+        "description": "Repository and Git setup commands",
+        "aliases": [
+          "r"
         ]
       }
     }

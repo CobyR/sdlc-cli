@@ -3,6 +3,15 @@ import {promisify} from 'util'
 
 const execAsync = promisify(exec)
 
+export async function isInsideGitRepository(): Promise<boolean> {
+  try {
+    const {stdout} = await execAsync('git rev-parse --is-inside-work-tree')
+    return stdout.trim() === 'true'
+  } catch {
+    return false
+  }
+}
+
 export async function getCurrentBranch(): Promise<string> {
   const {stdout} = await execAsync('git branch --show-current')
   return stdout.trim()

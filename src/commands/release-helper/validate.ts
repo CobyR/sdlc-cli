@@ -1,8 +1,8 @@
 import {Command} from '@oclif/core'
 import {readFile} from 'fs/promises'
 import {join} from 'path'
-import {isOnMainBranch, isWorkingTreeClean, getCurrentBranch} from '../../lib/git/branch'
-import {prExists} from '../../lib/git/pr'
+import {isInsideGitRepository, isOnMainBranch, isWorkingTreeClean, getCurrentBranch} from '../../lib/git/branch'
+import {getPrUrl} from '../../lib/git/pr'
 import {ALL_VERSION_FILES} from '../../lib/version/constants'
 import {
   createGitWorkflowError,
@@ -19,6 +19,7 @@ import {
   extractVersionBlock,
   countChangesInVersionBlock,
   updateChangelogForVersion,
+  getFirstVersionInChangelog,
 } from '../../lib/changelog'
 import {exec} from 'child_process'
 import {promisify} from 'util'
@@ -36,6 +37,10 @@ export default class Validate extends Command {
 
   async run(): Promise<void> {
     this.log('🔍 Validating release readiness...')
+
+    if (!(await isInsideGitRepository())) {
+      this.error('The current directory is not part of a git repository.')
+    }
 
     // Check branch
     if (await isOnMainBranch()) {
@@ -80,7 +85,8 @@ export default class Validate extends Command {
     this.log('✅ Working tree is clean')
 
     // Check PR exists
-    if (!(await prExists())) {
+    const prUrl = await getPrUrl()
+    if (!prUrl) {
       const branch = await getCurrentBranch()
       const error = createGitWorkflowError(
         'Missing Pull Request',
@@ -99,7 +105,7 @@ export default class Validate extends Command {
         ]
       ))
     }
-    this.log('✅ PR exists for current branch')
+    this.log(`✅ PR exists for current branch: ${prUrl}`)
 
     // Check if version files have been recently updated
     // Check commits on this branch that aren't on main (PR commits)
@@ -134,28 +140,59 @@ export default class Validate extends Command {
 
       this.log('✅ Version bump detected in PR commits')
 
-      // CHANGELOG sync: compare changes count with fixed issues, update and push if different
+      // CHANGELOG sync: compare changes count with fixed issues for the version being released.
+      // Use the first (newest) version in CHANGELOG when it exists, so we don't overwrite an older
+      // version's block (e.g. package.json still 0.1.2 but CHANGELOG already has 0.1.3 for this branch).
       const config = await getConfig()
       const language = (config.language || 'nodejs') as SupportedLanguage
       const tracker = (config.tracker || 'github') as SupportedTracker
       const versionManager = getVersionManager(language)
-      const version = await versionManager.getCurrentVersion()
+      const packageVersion = await versionManager.getCurrentVersion()
       const issueTracker = getIssueTracker(tracker, config.repo)
-      const fixedIssues = await issueTracker.getFixedIssues()
+      let fixedIssues = await issueTracker.getFixedIssues()
+      // Scope to issues referenced in the current PR body (Closes #11, #12 or #11, #12) when present
+      try {
+        const {stdout: prJson} = await execAsync('gh pr view --json body')
+        const pr = JSON.parse(prJson) as {body?: string}
+        const body = pr?.body ?? ''
+        const refs = new Set<string>()
+        for (const m of body.matchAll(/#(\d+)/g)) {
+          refs.add(m[1])
+        }
+        if (refs.size > 0) {
+          const scoped = fixedIssues.filter(issue => refs.has(issue.id))
+          if (scoped.length > 0) {
+            fixedIssues = scoped
+          }
+        }
+      } catch {
+        // Keep all fixed issues if we can't get PR body
+      }
       const fixedCount = fixedIssues.length
 
-      let changelogCount = 0
+      let changelogPath: string
+      let changelogContent: string
       try {
-        const changelogPath = join(process.cwd(), CHANGELOG_FILENAME)
-        const changelogContent = await readFile(changelogPath, 'utf-8')
-        const versionBlock = extractVersionBlock(changelogContent, version)
-        if (versionBlock !== null) {
-          changelogCount = countChangesInVersionBlock(versionBlock)
-        }
+        changelogPath = join(process.cwd(), CHANGELOG_FILENAME)
+        changelogContent = await readFile(changelogPath, 'utf-8')
       } catch (err: unknown) {
         const e = err as NodeJS.ErrnoException
         if (e.code !== 'ENOENT') {
           this.warn(`Could not read CHANGELOG.md: ${e.message}`)
+        }
+        changelogContent = ''
+        changelogPath = join(process.cwd(), CHANGELOG_FILENAME)
+      }
+
+      const firstChangelogVersion = getFirstVersionInChangelog(changelogContent)
+      const version =
+        firstChangelogVersion !== null ? firstChangelogVersion : packageVersion
+
+      let changelogCount = 0
+      if (changelogContent) {
+        const versionBlock = extractVersionBlock(changelogContent, version)
+        if (versionBlock !== null) {
+          changelogCount = countChangesInVersionBlock(versionBlock)
         }
       }
 

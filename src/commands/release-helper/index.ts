@@ -3,6 +3,8 @@ import {Command} from '@oclif/core'
 export default class ReleaseHelper extends Command {
   static description = 'Release workflow management commands'
 
+  static aliases = ['rh']
+
   static examples = [
     '<%= config.bin %> <%= command.id %> validate',
     '<%= config.bin %> <%= command.id %> bump-version',

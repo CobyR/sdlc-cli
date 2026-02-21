@@ -5,6 +5,42 @@ import type {Issue} from '../issue-tracker/types'
 export const CHANGELOG_FILENAME = 'CHANGELOG.md'
 
 /**
+ * Get the first (newest) version from changelog content.
+ * Expects Keep a Changelog format: first ## [version] - ... wins.
+ * Returns null if no version block found.
+ */
+export function getFirstVersionInChangelog(changelogContent: string): string | null {
+  const match = changelogContent.match(/^## \[([^\]]+)\]\s*-/m)
+  return match ? match[1].trim() : null
+}
+
+/**
+ * Parse the release date for a version from changelog content.
+ * Expects Keep a Changelog format: ## [version] - YYYY-MM-DD or ## [version] - Month DD, YYYY
+ * Returns the date string (e.g. "February 19, 2026") or null if not found.
+ */
+export function getReleaseDateForVersion(changelogContent: string, version: string): string | null {
+  const escaped = version.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const re = new RegExp(`^## \\[${escaped}\\]\\s*-\\s*(.+?)(?:\\n|$)`, 'm')
+  const match = changelogContent.match(re)
+  return match ? match[1].trim() : null
+}
+
+/**
+ * Return the content before the given version block (from start of file up to, but not including, ## [version]).
+ * If the version block is not found, returns null.
+ */
+export function contentBeforeVersionBlock(content: string, version: string): string | null {
+  const escaped = version.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const versionHeaderRe = new RegExp(`^## \\[${escaped}\\]`, 'm')
+  const match = content.match(versionHeaderRe)
+  if (!match || match.index === undefined) {
+    return null
+  }
+  return content.slice(0, match.index).replace(/\n+\s*$/, '\n\n')
+}
+
+/**
  * Find the current version block (## [version] - ...) and return the content after it.
  * Block ends at the next line matching ## [ or # Changelog.
  * If the version block is not found, returns null.
@@ -123,10 +159,13 @@ export async function updateChangelogForVersion(
       throw error
     }
   }
+  const beforeBlock = contentBeforeVersionBlock(existingChangelog, version)
   const afterBlock = contentAfterVersionBlock(existingChangelog, version)
   const updated =
-    afterBlock !== null
-      ? newEntry + afterBlock
-      : newEntry + (existingChangelog ? `\n\n${existingChangelog}` : '')
+    beforeBlock !== null && afterBlock !== null
+      ? beforeBlock + newEntry + afterBlock
+      : afterBlock !== null
+        ? newEntry + afterBlock
+        : newEntry + (existingChangelog ? `\n\n${existingChangelog}` : '')
   await writeFile(changelogPath, updated, 'utf-8')
 }
